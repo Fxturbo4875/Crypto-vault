@@ -88,32 +88,25 @@ export default function Dashboard() {
   };
   
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-blue-300">
       {/* Header */}
       <header className="bg-primary text-white shadow-md">
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           <div className="flex items-center">
             <Sidebar />
-            <div className="flex items-center space-x-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 md:h-8 md:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <h1 className="font-bold text-lg md:text-xl hidden sm:block">Crypto Exchange</h1>
+            <div className="flex items-center">
+              <span className="text-lg font-medium">
+                {user?.username}
+              </span>
             </div>
           </div>
           
-          <div className="flex items-center">
-            <div className="flex items-center space-x-2 mr-2">
-              <span className="hidden sm:inline">{user?.username}</span>
-              <span className="bg-white text-primary text-xs px-2 py-1 rounded-full font-medium">
-                {user?.role === "admin" ? "Admin" : "User"}
-              </span>
-            </div>
+          <div className="flex items-center space-x-2">
             <Button 
-              variant="secondary" 
+              variant="outline" 
               size="sm" 
               onClick={() => logoutMutation.mutate()}
-              className="text-xs sm:text-sm"
+              className="text-white border-white hover:bg-white/20 text-xs"
             >
               Logout
             </Button>
@@ -125,86 +118,87 @@ export default function Dashboard() {
         {/* Desktop Sidebar (rendered within Sidebar component) */}
 
         {/* Main Content */}
-        <main className="flex-1 p-4 md:p-6 pb-20 md:pb-6">
-          <div className="container mx-auto">
+        <main className="flex-1 px-3 py-4 pb-20 md:pb-6 max-w-full">
+          <div className="container mx-auto max-w-full">
             {/* Page Header */}
-            <div className="mb-4 md:mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-              <h2 className="text-xl md:text-2xl font-bold text-neutral-600 mb-3 sm:mb-0">Exchange Accounts</h2>
-              <div className="flex flex-row space-x-2">
-                <Button 
-                  onClick={() => setIsAddAccountOpen(true)}
-                  className="text-xs sm:text-sm"
-                >
-                  <PlusCircle className="h-4 w-4 mr-1 sm:h-5 sm:w-5" />
-                  <span className="sm:inline">Add Account</span>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setIsExportOptionsOpen(true)}
-                  className="text-xs sm:text-sm"
-                >
-                  <FileDown className="h-4 w-4 mr-1 sm:h-5 sm:w-5" />
-                  <span className="sm:inline">Export</span>
-                </Button>
-              </div>
+            <div className="mb-3">
+              <h2 className="text-lg font-medium text-neutral-800">Exchange Accounts</h2>
             </div>
 
-            {/* Search Bar - Always visible */}
-            <div className="mb-3 md:mb-4">
+            {/* Action Buttons */}
+            <div className="flex items-center space-x-2 mb-3">
+              <Button 
+                onClick={() => setIsAddAccountOpen(true)}
+                variant="outline"
+                size="sm"
+                className="bg-white hover:bg-white/90 text-neutral-800 border-neutral-200 text-xs px-3"
+              >
+                <PlusCircle className="h-4 w-4 mr-1" />
+                Add Account
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => setIsExportOptionsOpen(true)}
+                size="sm"
+                className="bg-white hover:bg-white/90 text-neutral-800 border-neutral-200 text-xs px-3"
+              >
+                <FileDown className="h-4 w-4 mr-1" />
+                Export
+              </Button>
+            </div>
+
+            {/* Search Bar */}
+            <div className="mb-3">
               <div className="relative">
                 <Input
                   placeholder="Search accounts..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 bg-white border-neutral-200 text-sm py-4"
                 />
-                <Search className="h-5 w-5 text-neutral-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                <Search className="h-4 w-4 text-neutral-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
               </div>
             </div>
 
-            {/* Filter Bar - Collapsible on mobile */}
-            <div className="mb-4 md:mb-6 bg-white p-3 md:p-4 rounded-md shadow-sm">
-              <div className="flex flex-col space-y-2">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                  <Select value={exchangeFilter} onValueChange={setExchangeFilter}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="All Exchanges" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Exchanges</SelectItem>
-                      {exchanges.map(exchange => (
-                        <SelectItem key={exchange} value={exchange}>{exchange}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  
-                  <Select value={authFilter} onValueChange={setAuthFilter}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Auth Status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Auth Status</SelectItem>
-                      <SelectItem value="true">Authenticator Enabled</SelectItem>
-                      <SelectItem value="false">Authenticator Disabled</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  
-                  {/* Admin only filter */}
-                  {user?.role === "admin" && (
-                    <Select value={userFilter} onValueChange={setUserFilter}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="All Users" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Users</SelectItem>
-                        {users.map(username => (
-                          <SelectItem key={username} value={username}>{username}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                </div>
-              </div>
+            {/* Filter Controls */}
+            <div className="mb-4 space-y-2">
+              <Select value={exchangeFilter} onValueChange={setExchangeFilter}>
+                <SelectTrigger className="w-full bg-white border-neutral-200 text-sm">
+                  <SelectValue placeholder="All Exchanges" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Exchanges</SelectItem>
+                  {exchanges.map(exchange => (
+                    <SelectItem key={exchange} value={exchange}>{exchange}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              <Select value={authFilter} onValueChange={setAuthFilter}>
+                <SelectTrigger className="w-full bg-white border-neutral-200 text-sm">
+                  <SelectValue placeholder="Auth Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Auth Status</SelectItem>
+                  <SelectItem value="true">Authenticator Enabled</SelectItem>
+                  <SelectItem value="false">Authenticator Disabled</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              {/* Admin only filter */}
+              {user?.role === "admin" && (
+                <Select value={userFilter} onValueChange={setUserFilter}>
+                  <SelectTrigger className="w-full bg-white border-neutral-200 text-sm">
+                    <SelectValue placeholder="All Users" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Users</SelectItem>
+                    {users.map(username => (
+                      <SelectItem key={username} value={username}>{username}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
             {/* Accounts List */}

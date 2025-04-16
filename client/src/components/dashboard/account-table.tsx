@@ -124,16 +124,70 @@ export default function AccountTable({ accounts, onView, onEdit, onDelete }: Acc
   if (isMobile) {
     return (
       <div>
+        {/* Column Headers */}
+        <div className="grid grid-cols-6 bg-gray-100 rounded text-xs py-2 px-1 text-neutral-700 mb-2">
+          <div className="font-medium">EXCHANGE</div>
+          <div className="font-medium">EMAIL</div>
+          <div className="font-medium">OWNER'S NAME</div>
+          <div className="font-medium">PHONE</div>
+          <div className="font-medium">AUTH STATUS</div>
+          <div className="font-medium">ADDED BY</div>
+        </div>
+
+        {/* Accounts */}
         {paginatedAccounts.length > 0 ? (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {paginatedAccounts.map(account => (
-              <MobileAccountCard 
-                key={account.id} 
-                account={account} 
-                onView={onView} 
-                onEdit={onEdit} 
-                onDelete={onDelete} 
-              />
+              <div key={account.id} className="bg-white rounded-md shadow-sm p-2 mb-1">
+                <div className="grid grid-cols-6 text-xs mb-1">
+                  <div className="flex items-center">
+                    <div className="h-5 w-5 rounded-full bg-primary flex items-center justify-center text-white text-xs mr-1">
+                      {account.exchangeName.charAt(0)}
+                    </div>
+                    <span className="truncate">{account.exchangeName}</span>
+                  </div>
+                  <div className="truncate">{account.email}</div>
+                  <div className="truncate">{account.ownersName}</div>
+                  <div className="truncate">{account.phoneNumber}</div>
+                  <div>
+                    <span className={cn(
+                      "text-xs px-1 py-0.5 rounded-sm font-medium",
+                      account.authenticatorEnabled 
+                        ? "bg-green-100 text-green-800" 
+                        : "bg-red-100 text-red-800"
+                    )}>
+                      {account.authenticatorEnabled ? "Enabled" : "Disabled"}
+                    </span>
+                  </div>
+                  <div className="truncate">{account.addedBy}</div>
+                </div>
+                <div className="flex justify-end space-x-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onView(account.id)}
+                    className="h-6 w-6 p-0"
+                  >
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onEdit(account.id)}
+                    className="h-6 w-6 p-0"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onDelete(account.id)}
+                    className="h-6 w-6 p-0"
+                  >
+                    <Trash className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
             ))}
           </div>
         ) : (
@@ -144,34 +198,29 @@ export default function AccountTable({ accounts, onView, onEdit, onDelete }: Acc
         
         {/* Mobile Pagination */}
         {accounts.length > 0 && (
-          <div className="pt-4 pb-6">
-            <div className="flex flex-col items-center justify-center space-y-3">
-              <div className="flex items-center justify-center space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handlePrevPage}
-                  disabled={currentPage === 1}
-                  className="h-8 px-3"
-                >
-                  Previous
-                </Button>
-                <span className="text-sm font-medium">
-                  Page {currentPage} of {totalPages}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleNextPage}
-                  disabled={currentPage === totalPages}
-                  className="h-8 px-3"
-                >
-                  Next
-                </Button>
-              </div>
-              <p className="text-xs text-neutral-500">
+          <div className="pt-3 pb-6">
+            <div className="flex items-center justify-between text-xs">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+                className="h-6 px-2"
+              >
+                &lt;
+              </Button>
+              <p className="text-xs text-neutral-700">
                 Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, accounts.length)} of {accounts.length} accounts
               </p>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className="h-6 px-2"
+              >
+                &gt;
+              </Button>
             </div>
           </div>
         )}
