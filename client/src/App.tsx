@@ -12,10 +12,10 @@ import UsersPage from "@/pages/users-page";
 function Router() {
   return (
     <Switch>
-      <ProtectedRoute path="/" component={Dashboard} />
-      <ProtectedRoute path="/users" component={UsersPage} />
-      <ProtectedRoute path="/reports" component={Dashboard} />
-      <ProtectedRoute path="/settings" component={Dashboard} />
+      <Route path="/" component={() => <ProtectedRoute component={Dashboard} />} />
+      <Route path="/users" component={() => <ProtectedRoute component={UsersPage} />} />
+      <Route path="/reports" component={() => <ProtectedRoute component={Dashboard} />} />
+      <Route path="/settings" component={() => <ProtectedRoute component={Dashboard} />} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>

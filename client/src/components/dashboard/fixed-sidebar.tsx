@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 interface SidebarItemProps {
   icon: React.ReactNode;
@@ -56,7 +56,7 @@ const MobileNavItem = ({ icon, label, active, onClick }: SidebarItemProps) => {
 };
 
 export default function Sidebar() {
-  const [location, navigate] = useLocation();
+  const [currentLocation, navigate] = useLocation();
   const [activeItem, setActiveItem] = useState("dashboard");
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
@@ -65,16 +65,16 @@ export default function Sidebar() {
   
   useEffect(() => {
     // Set active item based on current location
-    if (location === "/") {
+    if (currentLocation === "/") {
       setActiveItem("dashboard");
-    } else if (location === "/users") {
+    } else if (currentLocation === "/users") {
       setActiveItem("users");
-    } else if (location === "/reports") {
+    } else if (currentLocation === "/reports") {
       setActiveItem("reports");
-    } else if (location === "/settings") {
+    } else if (currentLocation === "/settings") {
       setActiveItem("settings");
     }
-  }, [location]);
+  }, [currentLocation]);
   
   const handleItemClick = (item: string) => {
     setActiveItem(item);

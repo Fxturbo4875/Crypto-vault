@@ -185,7 +185,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = parseInt(req.params.id);
       
       // Don't allow admin to delete themselves
-      if (userId === req.user.id) {
+      if (req.user && userId === req.user.id) {
         return res.status(400).json({ message: "Cannot delete your own admin account" });
       }
       

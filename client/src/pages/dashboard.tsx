@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
-import Sidebar from "@/components/dashboard/sidebar";
+import Sidebar from "@/components/dashboard/fixed-sidebar";
 import AccountTable from "@/components/dashboard/account-table";
 import AddAccountForm from "@/components/dashboard/add-account-form";
 import ExportOptions from "@/components/dashboard/export-options";
