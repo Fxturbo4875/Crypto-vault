@@ -89,7 +89,7 @@ export function setupAuth(app: Express) {
       if (req.body.role === "admin") {
         const adminUsers = await storage.getAdminUsers();
         if (adminUsers && adminUsers.length > 0) {
-          return res.status(400).json({ message: "Only one admin account is allowed" });
+          return res.status(400).json({ message: "You don't have admin privileges go try farming" });
         }
       }
 
