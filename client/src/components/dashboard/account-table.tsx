@@ -21,7 +21,7 @@ const MobileAccountCard = ({ account, onView, onEdit, onDelete }: {
   onDelete: (id: number) => void;
 }) => {
   return (
-    <div className="bg-white rounded-lg shadow-sm p-4 mb-3">
+    <div className="bg-card rounded-lg shadow-sm p-4 mb-3">
       <div className="flex justify-between items-start mb-3">
         <div className="flex items-center">
           <div className="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-primary bg-opacity-10 text-primary mr-3">
@@ -30,8 +30,8 @@ const MobileAccountCard = ({ account, onView, onEdit, onDelete }: {
             </svg>
           </div>
           <div>
-            <h3 className="font-medium text-neutral-800">{account.exchangeName}</h3>
-            <p className="text-xs text-neutral-500">Added by {account.addedBy}</p>
+            <h3 className="font-medium text-foreground">{account.exchangeName}</h3>
+            <p className="text-xs text-muted-foreground">Added by {account.addedBy}</p>
           </div>
         </div>
         <span className={cn(
@@ -46,16 +46,16 @@ const MobileAccountCard = ({ account, onView, onEdit, onDelete }: {
       
       <div className="space-y-2 mb-3">
         <div className="flex items-center text-sm">
-          <Mail className="h-4 w-4 text-neutral-400 mr-2" />
-          <span className="text-neutral-600">{account.email}</span>
+          <Mail className="h-4 w-4 text-muted-foreground mr-2" />
+          <span className="text-card-foreground">{account.email}</span>
         </div>
         <div className="flex items-center text-sm">
-          <User className="h-4 w-4 text-neutral-400 mr-2" />
-          <span className="text-neutral-600">{account.ownersName}</span>
+          <User className="h-4 w-4 text-muted-foreground mr-2" />
+          <span className="text-card-foreground">{account.ownersName}</span>
         </div>
         <div className="flex items-center text-sm">
-          <Phone className="h-4 w-4 text-neutral-400 mr-2" />
-          <span className="text-neutral-600">{account.phoneNumber}</span>
+          <Phone className="h-4 w-4 text-muted-foreground mr-2" />
+          <span className="text-card-foreground">{account.phoneNumber}</span>
         </div>
       </div>
       
@@ -125,7 +125,7 @@ export default function AccountTable({ accounts, onView, onEdit, onDelete }: Acc
     return (
       <div>
         {/* Column Headers */}
-        <div className="grid grid-cols-6 bg-gray-100 rounded text-xs py-2 px-1 text-neutral-700 mb-2">
+        <div className="grid grid-cols-6 bg-muted/50 rounded text-xs py-2 px-1 text-muted-foreground mb-2">
           <div className="font-medium">EXCHANGE</div>
           <div className="font-medium">EMAIL</div>
           <div className="font-medium">OWNER'S NAME</div>
@@ -138,17 +138,17 @@ export default function AccountTable({ accounts, onView, onEdit, onDelete }: Acc
         {paginatedAccounts.length > 0 ? (
           <div className="space-y-2">
             {paginatedAccounts.map(account => (
-              <div key={account.id} className="bg-white rounded-md shadow-sm p-2 mb-1">
+              <div key={account.id} className="bg-card rounded-md shadow-sm p-2 mb-1">
                 <div className="grid grid-cols-6 text-xs mb-1">
                   <div className="flex items-center">
-                    <div className="h-5 w-5 rounded-full bg-primary flex items-center justify-center text-white text-xs mr-1">
+                    <div className="h-5 w-5 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs mr-1">
                       {account.exchangeName.charAt(0)}
                     </div>
-                    <span className="truncate">{account.exchangeName}</span>
+                    <span className="truncate text-card-foreground">{account.exchangeName}</span>
                   </div>
-                  <div className="truncate">{account.email}</div>
-                  <div className="truncate">{account.ownersName}</div>
-                  <div className="truncate">{account.phoneNumber}</div>
+                  <div className="truncate text-card-foreground">{account.email}</div>
+                  <div className="truncate text-card-foreground">{account.ownersName}</div>
+                  <div className="truncate text-card-foreground">{account.phoneNumber}</div>
                   <div>
                     <span className={cn(
                       "text-xs px-1 py-0.5 rounded-sm font-medium",
@@ -159,7 +159,7 @@ export default function AccountTable({ accounts, onView, onEdit, onDelete }: Acc
                       {account.authenticatorEnabled ? "Enabled" : "Disabled"}
                     </span>
                   </div>
-                  <div className="truncate">{account.addedBy}</div>
+                  <div className="truncate text-card-foreground">{account.addedBy}</div>
                 </div>
                 <div className="flex justify-end space-x-1">
                   <Button
@@ -191,7 +191,7 @@ export default function AccountTable({ accounts, onView, onEdit, onDelete }: Acc
             ))}
           </div>
         ) : (
-          <div className="bg-white p-6 rounded-lg shadow-sm text-center text-neutral-500">
+          <div className="bg-card p-6 rounded-lg shadow-sm text-center text-muted-foreground">
             No accounts found
           </div>
         )}
@@ -209,7 +209,7 @@ export default function AccountTable({ accounts, onView, onEdit, onDelete }: Acc
               >
                 &lt;
               </Button>
-              <p className="text-xs text-neutral-700">
+              <p className="text-xs text-muted-foreground">
                 Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, accounts.length)} of {accounts.length} accounts
               </p>
               <Button
@@ -230,18 +230,18 @@ export default function AccountTable({ accounts, onView, onEdit, onDelete }: Acc
   
   // Desktop view
   return (
-    <div className="bg-white rounded-md shadow-sm overflow-hidden">
+    <div className="bg-card rounded-md shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-neutral-200">
-          <thead className="bg-neutral-100">
+        <table className="min-w-full divide-y divide-border">
+          <thead className="bg-muted/50">
             <tr>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Exchange</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Email</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Owner's Name</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Phone</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Auth Status</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Added By</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Actions</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Exchange</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Email</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Owner's Name</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Phone</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Auth Status</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Added By</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-neutral-200">
