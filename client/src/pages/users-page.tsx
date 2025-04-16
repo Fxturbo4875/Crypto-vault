@@ -61,9 +61,7 @@ export default function UsersPage() {
   // Delete user mutation
   const deleteUserMutation = useMutation({
     mutationFn: async (userId: number) => {
-      return apiRequest(`/api/admin/users/${userId}`, {
-        method: "DELETE"
-      } as any);
+      return apiRequest("DELETE", `/api/admin/users/${userId}`);
     },
     onSuccess: () => {
       toast({
