@@ -118,7 +118,7 @@ export default function Dashboard() {
         {/* Desktop Sidebar (rendered within Sidebar component) */}
 
         {/* Main Content */}
-        <main className="flex-1 px-3 py-4 pb-20 md:pb-6 max-w-full">
+        <main className={`flex-1 px-3 py-4 ${user?.role === 'admin' ? 'pb-32' : 'pb-6'} md:pb-6 max-w-full`}>
           <div className="container mx-auto max-w-full">
             {/* Page Header */}
             <div className="mb-3">
