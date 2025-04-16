@@ -11,7 +11,8 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  getAdminUsers(): Promise<User[]>; // Added method to get admin users
+  getAdminUsers(): Promise<User[]>; // Get all users for admin display
+  deleteUser(id: number): Promise<boolean>; // Delete a user
   
   // Account related methods
   getAccounts(): Promise<CryptoAccountWithUser[]>;
@@ -52,7 +53,18 @@ export class DatabaseStorage implements IStorage {
   }
   
   async getAdminUsers(): Promise<User[]> {
-    return await db.select().from(users).where(eq(users.role, "admin"));
+    // Get all users, not just admin users (the method name is kept for backward compatibility)
+    return await db.select().from(users);
+  }
+  
+  async deleteUser(id: number): Promise<boolean> {
+    try {
+      await db.delete(users).where(eq(users.id, id));
+      return true;
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      return false;
+    }
   }
   
   async getAccounts(): Promise<CryptoAccountWithUser[]> {

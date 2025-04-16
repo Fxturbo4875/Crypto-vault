@@ -153,6 +153,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to delete account" });
     }
   });
+  
+  // Admin routes for user management
+  
+  // Get all users with account counts - admin only
+  app.get("/api/admin/users", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const users = await storage.getAdminUsers();
+      
+      // For each user, get their accounts count
+      const usersWithCounts = await Promise.all(
+        users.map(async (user) => {
+          const accounts = await storage.getAccountsByUserId(user.id);
+          return {
+            ...user,
+            accountsCount: accounts.length
+          };
+        })
+      );
+      
+      res.status(200).json(usersWithCounts);
+    } catch (error) {
+      console.error("Error getting users:", error);
+      res.status(500).json({ message: "Error getting users" });
+    }
+  });
+  
+  // Delete a user - admin only
+  app.delete("/api/admin/users/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      
+      // Don't allow admin to delete themselves
+      if (userId === req.user.id) {
+        return res.status(400).json({ message: "Cannot delete your own admin account" });
+      }
+      
+      // First delete all accounts associated with this user
+      const userAccounts = await storage.getAccountsByUserId(userId);
+      for (const account of userAccounts) {
+        await storage.deleteAccount(account.id);
+      }
+      
+      // Then delete the user
+      const success = await storage.deleteUser(userId);
+      
+      if (success) {
+        res.status(200).json({ message: "User and associated accounts deleted successfully" });
+      } else {
+        res.status(404).json({ message: "User not found" });
+      }
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ message: "Error deleting user" });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;
