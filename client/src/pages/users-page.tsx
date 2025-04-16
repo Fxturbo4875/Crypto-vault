@@ -123,48 +123,48 @@ export default function UsersPage() {
   // Mobile view
   if (isMobile) {
     return (
-      <div className="p-4 pb-32">
+      <div className="p-4 pb-32 bg-blue-300">
         <div className="mb-4">
-          <h2 className="text-lg font-semibold flex items-center">
-            <UsersIcon className="h-5 w-5 mr-2" />
+          <h2 className="text-xl font-semibold">
             User Management
           </h2>
-          <p className="text-sm text-neutral-500">
+          <p className="text-neutral-600">
             Manage registered users and their accounts
           </p>
         </div>
 
         {users && users.length > 0 ? (
           <div className="space-y-3">
-            {users.map((user: UserWithAccounts) => (
+            {users.map((userItem: UserWithAccounts) => (
               <div 
-                key={user.id} 
+                key={userItem.id} 
                 className="bg-white rounded-md shadow-sm p-4"
               >
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h3 className="font-medium">{user.username}</h3>
-                    <Badge 
-                      className={user.role === "admin" ? "bg-primary" : "bg-neutral-500"}
-                    >
-                      {user.role}
-                    </Badge>
-                  </div>
-                  {user.id !== user?.id && (
+                <div className="mb-2">
+                  <h3 className="text-lg font-medium">{userItem.username}</h3>
+                  <Badge 
+                    className={userItem.role === "admin" ? "bg-primary" : "bg-neutral-500"}
+                  >
+                    {userItem.role}
+                  </Badge>
+                </div>
+                <div className="text-sm text-neutral-600 mb-3">
+                  <p>User ID: {userItem.id}</p>
+                  <p>Accounts: {userItem.accountsCount}</p>
+                </div>
+                {userItem.id !== user?.id && (
+                  <div className="flex justify-end">
                     <Button
                       variant="outline"
                       size="sm"
                       className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                      onClick={() => openDeleteDialog(user)}
+                      onClick={() => openDeleteDialog(userItem)}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete
                     </Button>
-                  )}
-                </div>
-                <div className="text-sm text-neutral-600">
-                  <p>User ID: {user.id}</p>
-                  <p>Accounts: {user.accountsCount}</p>
-                </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
