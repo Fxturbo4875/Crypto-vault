@@ -92,16 +92,19 @@ export default function Dashboard() {
       {/* Header */}
       <header className="bg-primary text-white shadow-md">
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-          <div className="flex items-center space-x-3">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <h1 className="font-bold text-xl">Crypto Exchange Account Manager</h1>
+          <div className="flex items-center">
+            <Sidebar />
+            <div className="flex items-center space-x-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 md:h-8 md:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <h1 className="font-bold text-lg md:text-xl hidden sm:block">Crypto Exchange</h1>
+            </div>
           </div>
           
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <span>{user?.username}</span>
+          <div className="flex items-center">
+            <div className="flex items-center space-x-2 mr-2">
+              <span className="hidden sm:inline">{user?.username}</span>
               <span className="bg-white text-primary text-xs px-2 py-1 rounded-full font-medium">
                 {user?.role === "admin" ? "Admin" : "User"}
               </span>
@@ -110,6 +113,7 @@ export default function Dashboard() {
               variant="secondary" 
               size="sm" 
               onClick={() => logoutMutation.mutate()}
+              className="text-xs sm:text-sm"
             >
               Logout
             </Button>
@@ -118,44 +122,52 @@ export default function Dashboard() {
       </header>
 
       <div className="flex flex-1">
-        {/* Sidebar */}
-        <Sidebar />
+        {/* Desktop Sidebar (rendered within Sidebar component) */}
 
         {/* Main Content */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-4 md:p-6 pb-20 md:pb-6">
           <div className="container mx-auto">
             {/* Page Header */}
-            <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
-              <h2 className="text-2xl font-bold text-neutral-600 mb-2 md:mb-0">Exchange Accounts</h2>
-              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                <Button onClick={() => setIsAddAccountOpen(true)}>
-                  <PlusCircle className="h-5 w-5 mr-1" />
-                  Add Account
+            <div className="mb-4 md:mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+              <h2 className="text-xl md:text-2xl font-bold text-neutral-600 mb-3 sm:mb-0">Exchange Accounts</h2>
+              <div className="flex flex-row space-x-2">
+                <Button 
+                  onClick={() => setIsAddAccountOpen(true)}
+                  className="text-xs sm:text-sm"
+                >
+                  <PlusCircle className="h-4 w-4 mr-1 sm:h-5 sm:w-5" />
+                  <span className="sm:inline">Add Account</span>
                 </Button>
-                <Button variant="outline" onClick={() => setIsExportOptionsOpen(true)}>
-                  <FileDown className="h-5 w-5 mr-1" />
-                  Export
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsExportOptionsOpen(true)}
+                  className="text-xs sm:text-sm"
+                >
+                  <FileDown className="h-4 w-4 mr-1 sm:h-5 sm:w-5" />
+                  <span className="sm:inline">Export</span>
                 </Button>
               </div>
             </div>
 
-            {/* Filter Bar */}
-            <div className="mb-6 bg-white p-4 rounded-md shadow-sm">
-              <div className="flex flex-col md:flex-row md:items-center space-y-3 md:space-y-0 md:space-x-4">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Input
-                      placeholder="Search accounts..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
-                    />
-                    <Search className="h-5 w-5 text-neutral-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-                  </div>
-                </div>
-                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+            {/* Search Bar - Always visible */}
+            <div className="mb-3 md:mb-4">
+              <div className="relative">
+                <Input
+                  placeholder="Search accounts..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+                <Search className="h-5 w-5 text-neutral-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+              </div>
+            </div>
+
+            {/* Filter Bar - Collapsible on mobile */}
+            <div className="mb-4 md:mb-6 bg-white p-3 md:p-4 rounded-md shadow-sm">
+              <div className="flex flex-col space-y-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                   <Select value={exchangeFilter} onValueChange={setExchangeFilter}>
-                    <SelectTrigger className="w-[180px]">
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="All Exchanges" />
                     </SelectTrigger>
                     <SelectContent>
@@ -167,7 +179,7 @@ export default function Dashboard() {
                   </Select>
                   
                   <Select value={authFilter} onValueChange={setAuthFilter}>
-                    <SelectTrigger className="w-[180px]">
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Auth Status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -180,7 +192,7 @@ export default function Dashboard() {
                   {/* Admin only filter */}
                   {user?.role === "admin" && (
                     <Select value={userFilter} onValueChange={setUserFilter}>
-                      <SelectTrigger className="w-[180px]">
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="All Users" />
                       </SelectTrigger>
                       <SelectContent>

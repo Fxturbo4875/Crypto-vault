@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { Eye, Edit, Trash } from "lucide-react";
+import { Eye, Edit, Trash, ChevronRight, Mail, User, Phone, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CryptoAccountWithUser } from "@shared/schema";
 import { format } from "date-fns";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 interface AccountTableProps {
   accounts: CryptoAccountWithUser[];
@@ -11,9 +13,90 @@ interface AccountTableProps {
   onDelete: (id: number) => void;
 }
 
+// Mobile card view for a single account
+const MobileAccountCard = ({ account, onView, onEdit, onDelete }: { 
+  account: CryptoAccountWithUser; 
+  onView: (id: number) => void;
+  onEdit: (id: number) => void;
+  onDelete: (id: number) => void;
+}) => {
+  return (
+    <div className="bg-white rounded-lg shadow-sm p-4 mb-3">
+      <div className="flex justify-between items-start mb-3">
+        <div className="flex items-center">
+          <div className="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-primary bg-opacity-10 text-primary mr-3">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <h3 className="font-medium text-neutral-800">{account.exchangeName}</h3>
+            <p className="text-xs text-neutral-500">Added by {account.addedBy}</p>
+          </div>
+        </div>
+        <span className={cn(
+          "px-2 py-1 text-xs font-semibold rounded-full",
+          account.authenticatorEnabled 
+            ? "bg-green-100 text-green-800" 
+            : "bg-red-100 text-red-800"
+        )}>
+          {account.authenticatorEnabled ? "Auth Enabled" : "Auth Disabled"}
+        </span>
+      </div>
+      
+      <div className="space-y-2 mb-3">
+        <div className="flex items-center text-sm">
+          <Mail className="h-4 w-4 text-neutral-400 mr-2" />
+          <span className="text-neutral-600">{account.email}</span>
+        </div>
+        <div className="flex items-center text-sm">
+          <User className="h-4 w-4 text-neutral-400 mr-2" />
+          <span className="text-neutral-600">{account.ownersName}</span>
+        </div>
+        <div className="flex items-center text-sm">
+          <Phone className="h-4 w-4 text-neutral-400 mr-2" />
+          <span className="text-neutral-600">{account.phoneNumber}</span>
+        </div>
+      </div>
+      
+      <div className="flex justify-between items-center">
+        <div className="flex space-x-1">
+          <Button
+            variant="ghost"
+            size="sm" 
+            onClick={() => onView(account.id)}
+            className="text-primary"
+          >
+            <Eye className="h-4 w-4 mr-1" />
+            View
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onEdit(account.id)}
+          >
+            <Edit className="h-4 w-4 mr-1" />
+            Edit
+          </Button>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onDelete(account.id)}
+          className="text-red-500"
+        >
+          <Trash className="h-4 w-4 mr-1" />
+          Delete
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 export default function AccountTable({ accounts, onView, onEdit, onDelete }: AccountTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const isMobile = useIsMobile();
+  const itemsPerPage = isMobile ? 3 : 5;
   
   // Calculate pagination
   const totalPages = Math.ceil(accounts.length / itemsPerPage);
@@ -37,6 +120,66 @@ export default function AccountTable({ accounts, onView, onEdit, onDelete }: Acc
     }
   };
   
+  // Mobile view
+  if (isMobile) {
+    return (
+      <div>
+        {paginatedAccounts.length > 0 ? (
+          <div className="space-y-3">
+            {paginatedAccounts.map(account => (
+              <MobileAccountCard 
+                key={account.id} 
+                account={account} 
+                onView={onView} 
+                onEdit={onEdit} 
+                onDelete={onDelete} 
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white p-6 rounded-lg shadow-sm text-center text-neutral-500">
+            No accounts found
+          </div>
+        )}
+        
+        {/* Mobile Pagination */}
+        {accounts.length > 0 && (
+          <div className="pt-4 pb-6">
+            <div className="flex flex-col items-center justify-center space-y-3">
+              <div className="flex items-center justify-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePrevPage}
+                  disabled={currentPage === 1}
+                  className="h-8 px-3"
+                >
+                  Previous
+                </Button>
+                <span className="text-sm font-medium">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                  className="h-8 px-3"
+                >
+                  Next
+                </Button>
+              </div>
+              <p className="text-xs text-neutral-500">
+                Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, accounts.length)} of {accounts.length} accounts
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+  
+  // Desktop view
   return (
     <div className="bg-white rounded-md shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
