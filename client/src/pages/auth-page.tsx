@@ -1,6 +1,7 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Redirect } from "wouter";
 import AuthForm from "@/components/auth-form";
+import { AuthThemeToggle } from "@/components/ui/auth-theme-toggle";
 
 export default function AuthPage() {
   const { user, isLoading } = useAuth();
@@ -11,7 +12,12 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative">
+      {/* Theme Toggle - Always visible */}
+      <div className="absolute top-4 right-4 z-10">
+        <AuthThemeToggle />
+      </div>
+      
       {/* Top Logo & Branding - Visible on Mobile */}
       <div className="bg-primary px-4 py-5 flex flex-col items-center justify-center text-primary-foreground md:hidden">
         <div className="w-16 h-16 bg-background rounded-full flex items-center justify-center mb-3">
