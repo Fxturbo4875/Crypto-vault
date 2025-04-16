@@ -4,7 +4,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { User } from "@shared/schema";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Trash2, AlertCircle, Users as UsersIcon } from "lucide-react";
+import { Loader2, Trash2, AlertCircle, Users as UsersIcon, ArrowLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   AlertDialog,
@@ -124,6 +124,17 @@ export default function UsersPage() {
   if (isMobile) {
     return (
       <div className="p-4 pb-32 bg-blue-300">
+        <div className="flex justify-between items-center mb-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setLocation("/")}
+            className="mb-2"
+          >
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            Back
+          </Button>
+        </div>
         <div className="mb-4">
           <h2 className="text-xl font-semibold">
             User Management
@@ -206,14 +217,24 @@ export default function UsersPage() {
   // Desktop view
   return (
     <div className="p-6">
-      <div className="mb-6">
-        <h2 className="text-2xl font-semibold flex items-center">
-          <UsersIcon className="h-6 w-6 mr-2" />
-          User Management
-        </h2>
-        <p className="text-neutral-500">
-          View and manage registered users and their accounts
-        </p>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-2xl font-semibold flex items-center">
+            <UsersIcon className="h-6 w-6 mr-2" />
+            User Management
+          </h2>
+          <p className="text-neutral-500">
+            View and manage registered users and their accounts
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          onClick={() => setLocation("/")}
+          className="ml-4"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Dashboard
+        </Button>
       </div>
 
       {users && users.length > 0 ? (
