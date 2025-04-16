@@ -244,10 +244,10 @@ export default function AccountTable({ accounts, onView, onEdit, onDelete }: Acc
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-neutral-200">
+          <tbody className="bg-card divide-y divide-border">
             {paginatedAccounts.length > 0 ? (
               paginatedAccounts.map((account) => (
-                <tr key={account.id} className="hover:bg-neutral-50">
+                <tr key={account.id} className="hover:bg-muted/50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-primary bg-opacity-10 text-primary">
@@ -256,18 +256,18 @@ export default function AccountTable({ accounts, onView, onEdit, onDelete }: Acc
                         </svg>
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-neutral-600">{account.exchangeName}</div>
+                        <div className="text-sm font-medium text-card-foreground">{account.exchangeName}</div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-neutral-600">{account.email}</div>
+                    <div className="text-sm text-card-foreground">{account.email}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-neutral-600">{account.ownersName}</div>
+                    <div className="text-sm text-card-foreground">{account.ownersName}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-neutral-600">{account.phoneNumber}</div>
+                    <div className="text-sm text-card-foreground">{account.phoneNumber}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
@@ -278,7 +278,7 @@ export default function AccountTable({ accounts, onView, onEdit, onDelete }: Acc
                       {account.authenticatorEnabled ? "Enabled" : "Disabled"}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-600">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-card-foreground">
                     {account.addedBy}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -295,7 +295,7 @@ export default function AccountTable({ accounts, onView, onEdit, onDelete }: Acc
                         variant="ghost"
                         size="icon"
                         onClick={() => onEdit(account.id)}
-                        className="text-neutral-600 hover:text-primary hover:bg-primary/10"
+                        className="text-card-foreground hover:text-primary hover:bg-primary/10"
                       >
                         <Edit className="h-5 w-5" />
                       </Button>
@@ -303,7 +303,7 @@ export default function AccountTable({ accounts, onView, onEdit, onDelete }: Acc
                         variant="ghost"
                         size="icon"
                         onClick={() => onDelete(account.id)}
-                        className="text-neutral-600 hover:text-red-600 hover:bg-red-50"
+                        className="text-card-foreground hover:text-destructive hover:bg-destructive/10"
                       >
                         <Trash className="h-5 w-5" />
                       </Button>
@@ -313,7 +313,7 @@ export default function AccountTable({ accounts, onView, onEdit, onDelete }: Acc
               ))
             ) : (
               <tr>
-                <td colSpan={7} className="px-6 py-4 text-center text-neutral-500">
+                <td colSpan={7} className="px-6 py-4 text-center text-muted-foreground">
                   No accounts found
                 </td>
               </tr>
@@ -324,10 +324,10 @@ export default function AccountTable({ accounts, onView, onEdit, onDelete }: Acc
       
       {/* Pagination */}
       {accounts.length > 0 && (
-        <div className="bg-white px-4 py-3 border-t border-neutral-200 sm:px-6">
+        <div className="bg-card px-4 py-3 border-t border-border sm:px-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-neutral-500">
+              <p className="text-sm text-muted-foreground">
                 Showing <span className="font-medium">{startIndex + 1}</span> to <span className="font-medium">
                   {Math.min(startIndex + itemsPerPage, accounts.length)}
                 </span> of <span className="font-medium">{accounts.length}</span> accounts
@@ -338,7 +338,7 @@ export default function AccountTable({ accounts, onView, onEdit, onDelete }: Acc
                 <button
                   onClick={handlePrevPage}
                   disabled={currentPage === 1}
-                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-neutral-300 bg-white text-sm font-medium text-neutral-500 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-border bg-card text-sm font-medium text-muted-foreground hover:bg-muted/50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <span className="sr-only">Previous</span>
                   <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -355,8 +355,8 @@ export default function AccountTable({ accounts, onView, onEdit, onDelete }: Acc
                       onClick={() => setCurrentPage(pageNum)}
                       className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                         currentPage === pageNum
-                          ? "z-10 bg-primary text-white border-primary"
-                          : "bg-white text-neutral-500 border-neutral-300 hover:bg-neutral-50"
+                          ? "z-10 bg-primary text-primary-foreground border-primary"
+                          : "bg-card text-muted-foreground border-border hover:bg-muted/50"
                       }`}
                     >
                       {pageNum}
@@ -367,7 +367,7 @@ export default function AccountTable({ accounts, onView, onEdit, onDelete }: Acc
                 <button
                   onClick={handleNextPage}
                   disabled={currentPage === totalPages}
-                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-neutral-300 bg-white text-sm font-medium text-neutral-500 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-border bg-card text-sm font-medium text-muted-foreground hover:bg-muted/50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <span className="sr-only">Next</span>
                   <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
