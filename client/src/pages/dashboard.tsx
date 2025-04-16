@@ -15,7 +15,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { CryptoAccountWithUser } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Search, PlusCircle, FileDown } from "lucide-react";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { AuthThemeToggle } from "@/components/ui/auth-theme-toggle";
 
 export default function Dashboard() {
   const { user, logoutMutation } = useAuth();
@@ -103,7 +103,7 @@ export default function Dashboard() {
           </div>
           
           <div className="flex items-center space-x-2">
-            <ThemeToggle />
+            <AuthThemeToggle />
             <Button 
               variant="outline" 
               size="sm" 
