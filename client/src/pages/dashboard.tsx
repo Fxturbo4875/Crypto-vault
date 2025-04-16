@@ -15,6 +15,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { CryptoAccountWithUser } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Search, PlusCircle, FileDown } from "lucide-react";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export default function Dashboard() {
   const { user, logoutMutation } = useAuth();
@@ -88,9 +89,9 @@ export default function Dashboard() {
   };
   
   return (
-    <div className="min-h-screen flex flex-col bg-blue-300">
+    <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
-      <header className="bg-primary text-white shadow-md">
+      <header className="bg-primary text-primary-foreground shadow-md">
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           <div className="flex items-center">
             <Sidebar />
@@ -102,11 +103,12 @@ export default function Dashboard() {
           </div>
           
           <div className="flex items-center space-x-2">
+            <ThemeToggle />
             <Button 
               variant="outline" 
               size="sm" 
               onClick={() => logoutMutation.mutate()}
-              className="text-white border-white hover:bg-white/20 text-xs"
+              className="text-primary-foreground border-primary-foreground hover:bg-primary-foreground/20 text-xs"
             >
               Logout
             </Button>
@@ -122,7 +124,7 @@ export default function Dashboard() {
           <div className="container mx-auto max-w-full">
             {/* Page Header */}
             <div className="mb-3">
-              <h2 className="text-lg font-medium text-neutral-800">Exchange Accounts</h2>
+              <h2 className="text-lg font-medium text-foreground">Exchange Accounts</h2>
             </div>
 
             {/* Action Buttons */}
@@ -131,7 +133,7 @@ export default function Dashboard() {
                 onClick={() => setIsAddAccountOpen(true)}
                 variant="outline"
                 size="sm"
-                className="bg-white hover:bg-white/90 text-neutral-800 border-neutral-200 text-xs px-3"
+                className="bg-card hover:bg-card/90 text-card-foreground border-border text-xs px-3"
               >
                 <PlusCircle className="h-4 w-4 mr-1" />
                 Add Account
@@ -140,7 +142,7 @@ export default function Dashboard() {
                 variant="outline" 
                 onClick={() => setIsExportOptionsOpen(true)}
                 size="sm"
-                className="bg-white hover:bg-white/90 text-neutral-800 border-neutral-200 text-xs px-3"
+                className="bg-card hover:bg-card/90 text-card-foreground border-border text-xs px-3"
               >
                 <FileDown className="h-4 w-4 mr-1" />
                 Export
@@ -154,16 +156,16 @@ export default function Dashboard() {
                   placeholder="Search accounts..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-white border-neutral-200 text-sm py-4"
+                  className="pl-10 bg-card border-border text-sm py-4"
                 />
-                <Search className="h-4 w-4 text-neutral-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                <Search className="h-4 w-4 text-muted-foreground absolute left-3 top-1/2 transform -translate-y-1/2" />
               </div>
             </div>
 
             {/* Filter Controls */}
             <div className="mb-4 space-y-2">
               <Select value={exchangeFilter} onValueChange={setExchangeFilter}>
-                <SelectTrigger className="w-full bg-white border-neutral-200 text-sm">
+                <SelectTrigger className="w-full bg-card border-border text-sm">
                   <SelectValue placeholder="All Exchanges" />
                 </SelectTrigger>
                 <SelectContent>
@@ -175,7 +177,7 @@ export default function Dashboard() {
               </Select>
               
               <Select value={authFilter} onValueChange={setAuthFilter}>
-                <SelectTrigger className="w-full bg-white border-neutral-200 text-sm">
+                <SelectTrigger className="w-full bg-card border-border text-sm">
                   <SelectValue placeholder="Auth Status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -188,7 +190,7 @@ export default function Dashboard() {
               {/* Admin only filter */}
               {user?.role === "admin" && (
                 <Select value={userFilter} onValueChange={setUserFilter}>
-                  <SelectTrigger className="w-full bg-white border-neutral-200 text-sm">
+                  <SelectTrigger className="w-full bg-card border-border text-sm">
                     <SelectValue placeholder="All Users" />
                   </SelectTrigger>
                   <SelectContent>
@@ -207,7 +209,7 @@ export default function Dashboard() {
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
               </div>
             ) : isError ? (
-              <div className="bg-red-50 p-4 rounded-md text-red-600">
+              <div className="bg-destructive/10 p-4 rounded-md text-destructive border border-destructive/20">
                 Failed to load accounts. Please try again.
               </div>
             ) : (
