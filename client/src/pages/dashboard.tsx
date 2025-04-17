@@ -108,7 +108,7 @@ export default function Dashboard() {
               variant="outline" 
               size="sm" 
               onClick={() => logoutMutation.mutate()}
-              className="text-primary-foreground border-primary-foreground hover:bg-primary-foreground/20 text-xs"
+              className="bg-white text-primary border-white hover:bg-white/90 hover:text-primary text-xs font-medium"
             >
               Logout
             </Button>
