@@ -9,6 +9,7 @@ import AuthPage from "@/pages/auth-page";
 import Dashboard from "@/pages/dashboard";
 import UsersPage from "@/pages/users-page";
 import ReportsPage from "@/pages/reports-page";
+import UserReportPage from "@/pages/user-report-page";
 import React from "react";
 
 function Router() {
