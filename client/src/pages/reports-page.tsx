@@ -197,88 +197,90 @@ export default function ReportsPage() {
             )}
           </div>
           
-          <div className="bg-card rounded-md shadow">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Exchange</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Added By</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isLoading ? (
+          <div className="bg-card rounded-md shadow overflow-hidden">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8">
-                      Loading accounts...
-                    </TableCell>
+                    <TableHead className="w-[100px] md:w-auto">Exchange</TableHead>
+                    <TableHead className="w-[120px] md:w-auto">Email</TableHead>
+                    <TableHead className="w-[80px] md:w-auto hidden md:table-cell">Added By</TableHead>
+                    <TableHead className="w-[100px] md:w-auto">Status</TableHead>
+                    <TableHead className="w-[120px] md:w-auto text-right">Actions</TableHead>
                   </TableRow>
-                ) : filteredAccounts.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8">
-                      No accounts found.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredAccounts.map(account => (
-                    <TableRow key={account.id}>
-                      <TableCell>{account.exchangeName}</TableCell>
-                      <TableCell>{account.email}</TableCell>
-                      <TableCell>{account.addedBy}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center">
-                          {getStatusIcon(account.status)}
-                          <span className="ml-2 capitalize">
-                            {account.status === "wrong_password" ? "Wrong Password" : account.status}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end items-center space-x-2">
-                          <div className="flex items-center space-x-1">
-                            <Checkbox 
-                              checked={account.status === "good"}
-                              id={`good-${account.id}`}
-                              className="border-green-500 data-[state=checked]:bg-green-500"
-                              onCheckedChange={(checked) => {
-                                if (checked) handleStatusChange(account.id, "good");
-                              }}
-                            />
-                            <label htmlFor={`good-${account.id}`} className="text-sm text-green-600">Good</label>
-                          </div>
-                          
-                          <div className="flex items-center space-x-1">
-                            <Checkbox 
-                              checked={account.status === "bad"}
-                              id={`bad-${account.id}`}
-                              className="border-red-500 data-[state=checked]:bg-red-500"
-                              onCheckedChange={(checked) => {
-                                if (checked) handleStatusChange(account.id, "bad");
-                              }}
-                            />
-                            <label htmlFor={`bad-${account.id}`} className="text-sm text-red-600">Bad</label>
-                          </div>
-                          
-                          <div className="flex items-center space-x-1">
-                            <Checkbox 
-                              checked={account.status === "wrong_password"}
-                              id={`wrong-${account.id}`}
-                              className="border-amber-500 data-[state=checked]:bg-amber-500"
-                              onCheckedChange={(checked) => {
-                                if (checked) handleStatusChange(account.id, "wrong_password");
-                              }}
-                            />
-                            <label htmlFor={`wrong-${account.id}`} className="text-sm text-amber-600">Wrong Pass</label>
-                          </div>
-                        </div>
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8">
+                        Loading accounts...
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+                  ) : filteredAccounts.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8">
+                        No accounts found.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    filteredAccounts.map(account => (
+                      <TableRow key={account.id}>
+                        <TableCell className="font-medium whitespace-nowrap">{account.exchangeName}</TableCell>
+                        <TableCell className="whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px]">{account.email}</TableCell>
+                        <TableCell className="hidden md:table-cell">{account.addedBy}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center whitespace-nowrap">
+                            {getStatusIcon(account.status)}
+                            <span className="ml-1 capitalize truncate text-xs md:text-sm">
+                              {account.status === "wrong_password" ? "Wrong Pass" : account.status}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="p-2 md:p-4">
+                          <div className="flex flex-col md:flex-row justify-end items-end md:items-center gap-1 md:gap-2">
+                            <div className="flex items-center gap-1">
+                              <Checkbox 
+                                checked={account.status === "good"}
+                                id={`good-${account.id}`}
+                                className="border-green-500 data-[state=checked]:bg-green-500 h-3 w-3 md:h-4 md:w-4"
+                                onCheckedChange={(checked) => {
+                                  if (checked) handleStatusChange(account.id, "good");
+                                }}
+                              />
+                              <label htmlFor={`good-${account.id}`} className="text-xs md:text-sm text-green-600">Good</label>
+                            </div>
+                            
+                            <div className="flex items-center gap-1">
+                              <Checkbox 
+                                checked={account.status === "bad"}
+                                id={`bad-${account.id}`}
+                                className="border-red-500 data-[state=checked]:bg-red-500 h-3 w-3 md:h-4 md:w-4"
+                                onCheckedChange={(checked) => {
+                                  if (checked) handleStatusChange(account.id, "bad");
+                                }}
+                              />
+                              <label htmlFor={`bad-${account.id}`} className="text-xs md:text-sm text-red-600">Bad</label>
+                            </div>
+                            
+                            <div className="flex items-center gap-1">
+                              <Checkbox 
+                                checked={account.status === "wrong_password"}
+                                id={`wrong-${account.id}`}
+                                className="border-amber-500 data-[state=checked]:bg-amber-500 h-3 w-3 md:h-4 md:w-4"
+                                onCheckedChange={(checked) => {
+                                  if (checked) handleStatusChange(account.id, "wrong_password");
+                                }}
+                              />
+                              <label htmlFor={`wrong-${account.id}`} className="text-xs md:text-sm text-amber-600">WPass</label>
+                            </div>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         </div>
       </div>
