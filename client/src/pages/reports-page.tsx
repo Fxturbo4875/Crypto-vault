@@ -197,8 +197,8 @@ export default function ReportsPage() {
             )}
           </div>
           
-          <div className="bg-card rounded-md shadow overflow-hidden">
-            <div className="max-h-[70vh] overflow-y-auto overflow-x-auto">
+          <div className="bg-card rounded-md shadow overflow-hidden flex flex-col h-[calc(100vh-260px)]">
+            <div className="overflow-y-auto overflow-x-auto flex-grow">
               <table className="w-full border-collapse">
                 <thead className="sticky top-0 z-10 bg-card">
                   <tr className="border-b transition-colors">
@@ -209,7 +209,7 @@ export default function ReportsPage() {
                     <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-[120px] md:w-auto">Actions</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="overflow-y-auto">
                   {isLoading ? (
                     <tr className="border-b transition-colors">
                       <td className="p-4 align-middle text-center py-8" colSpan={5}>
