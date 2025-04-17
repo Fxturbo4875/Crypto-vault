@@ -114,8 +114,9 @@ export default function ReportsPage() {
         return <X className="h-5 w-5 text-red-500" />;
       case "wrong_password":
         return <AlertTriangle className="h-5 w-5 text-amber-500" />;
+      case "unchecked":
       default:
-        return null;
+        return <AlertTriangle className="h-5 w-5 text-gray-400" />;
     }
   };
   
