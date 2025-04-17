@@ -30,6 +30,7 @@ export const cryptoAccounts = pgTable("crypto_accounts", {
   phoneNumber: text("phone_number").notNull(),
   userId: integer("user_id").notNull(),
   dateAdded: text("date_added").notNull(),
+  status: text("status").notNull().default("unchecked"), // 'good', 'bad', 'wrong_password', or 'unchecked'
 });
 
 export const insertCryptoAccountSchema = createInsertSchema(cryptoAccounts).pick({
@@ -41,6 +42,7 @@ export const insertCryptoAccountSchema = createInsertSchema(cryptoAccounts).pick
   phoneNumber: true,
   userId: true,
   dateAdded: true,
+  status: true,
 });
 
 export type InsertCryptoAccount = z.infer<typeof insertCryptoAccountSchema>;
