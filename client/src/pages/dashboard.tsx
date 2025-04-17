@@ -270,7 +270,8 @@ export default function Dashboard() {
       <Dialog open={isExportOptionsOpen} onOpenChange={setIsExportOptionsOpen}>
         <DialogContent className="sm:max-w-lg">
           <ExportOptions 
-            accounts={filteredAccounts || []}
+            accounts={accounts || []}
+            filteredAccounts={filteredAccounts || []}
             onClose={() => setIsExportOptionsOpen(false)}
           />
         </DialogContent>

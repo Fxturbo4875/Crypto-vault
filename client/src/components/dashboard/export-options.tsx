@@ -33,10 +33,11 @@ type ExportFormValues = z.infer<typeof exportSchema>;
 
 interface ExportOptionsProps {
   accounts: CryptoAccountWithUser[];
+  filteredAccounts: CryptoAccountWithUser[];
   onClose: () => void;
 }
 
-export default function ExportOptions({ accounts, onClose }: ExportOptionsProps) {
+export default function ExportOptions({ accounts, filteredAccounts, onClose }: ExportOptionsProps) {
   const { toast } = useToast();
   const [isExporting, setIsExporting] = useState(false);
   
@@ -65,10 +66,11 @@ export default function ExportOptions({ accounts, onClose }: ExportOptionsProps)
     setIsExporting(true);
     
     try {
-      // Filter accounts based on form selections
-      let exportData = [...accounts];
+      // Choose between all accounts or filtered accounts
+      let exportData = data.dataSelection === "all" ? [...accounts] : [...filteredAccounts];
       
-      if (data.dataSelection === "filtered") {
+      // Apply additional filters if selected
+      if (data.dataSelection === "filtered" && (data.exchangeFilter !== "all" || data.authFilter !== "all" || data.userFilter !== "all")) {
         if (data.exchangeFilter && data.exchangeFilter !== "all") {
           exportData = exportData.filter(account => account.exchangeName === data.exchangeFilter);
         }
@@ -177,13 +179,13 @@ export default function ExportOptions({ accounts, onClose }: ExportOptionsProps)
                       <FormControl>
                         <RadioGroupItem value="all" />
                       </FormControl>
-                      <FormLabel className="font-normal">All Accounts</FormLabel>
+                      <FormLabel className="font-normal">All Accounts ({accounts.length})</FormLabel>
                     </FormItem>
                     <FormItem className="flex items-center space-x-2">
                       <FormControl>
                         <RadioGroupItem value="filtered" />
                       </FormControl>
-                      <FormLabel className="font-normal">Filtered Accounts</FormLabel>
+                      <FormLabel className="font-normal">Currently Visible Accounts ({filteredAccounts.length})</FormLabel>
                     </FormItem>
                   </RadioGroup>
                 </FormControl>
@@ -194,7 +196,8 @@ export default function ExportOptions({ accounts, onClose }: ExportOptionsProps)
           
           {dataSelection === "filtered" && (
             <div className="space-y-4 border rounded-md p-4">
-              <h3 className="font-medium text-sm">Additional Filters</h3>
+              <h3 className="font-medium text-sm">Additional Filters for Visible Accounts</h3>
+              <p className="text-xs text-muted-foreground">These filters will be applied to the currently visible accounts.</p>
               
               <FormField
                 control={form.control}
