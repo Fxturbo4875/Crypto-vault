@@ -38,14 +38,21 @@ export class ReportPDF {
       
       // Map accounts to rows
       const rows: ReportRowData[] = accounts.map(account => {
-        const statusText = account.status === "wrong_password" ? "Wrong Password" : 
-                         (account.status || "unchecked");
+        let statusText = "Unchecked";
+        
+        if (account.status === "good") {
+          statusText = "Good";
+        } else if (account.status === "bad") {
+          statusText = "Bad";
+        } else if (account.status === "wrong_password") {
+          statusText = "Wrong Password";
+        }
         
         return {
           exchangeName: account.exchangeName,
           email: account.email,
           addedBy: account.addedBy,
-          status: statusText.charAt(0).toUpperCase() + statusText.slice(1), // Capitalize first letter
+          status: statusText, // Already capitalized
           statusColor: this.getStatusColor(account.status || "unchecked"),
         };
       });
@@ -105,13 +112,13 @@ export class ReportPDF {
   static getStatusColor(status: string) {
     switch (status) {
       case "good":
-        return { r: 0, g: 200, b: 83, a: 0.2 }; // Light green with transparency
+        return { r: 0, g: 200, b: 83, a: 0.15 }; // Light green with reduced transparency
       case "bad":
-        return { r: 255, g: 0, b: 0, a: 0.2 }; // Light red with transparency
+        return { r: 255, g: 0, b: 0, a: 0.15 }; // Light red with reduced transparency
       case "wrong_password":
-        return { r: 255, g: 191, b: 0, a: 0.2 }; // Light amber with transparency
+        return { r: 255, g: 191, b: 0, a: 0.15 }; // Light amber with reduced transparency
       default:
-        return { r: 200, g: 200, b: 200, a: 0.1 }; // Light gray with transparency
+        return { r: 200, g: 200, b: 200, a: 0.05 }; // Light gray with more transparency
     }
   }
 }

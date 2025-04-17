@@ -289,53 +289,103 @@ export default function ReportsPage() {
           <div className="space-y-4">
             <h2 className="text-lg font-semibold">Export Report</h2>
             
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium">Export Format</h3>
-              <div className="grid grid-cols-1 gap-2">
-                <Button 
-                  variant="outline" 
-                  className="justify-start"
-                  onClick={() => handleExport("pdf", "all")}
-                >
-                  <FileDown className="mr-2 h-4 w-4" />
-                  Export All Accounts as PDF
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  className="justify-start"
-                  onClick={() => handleExport("pdf", "current")}
-                >
-                  <FileDown className="mr-2 h-4 w-4" />
-                  Export Current Filtered Accounts as PDF
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  className="justify-start"
-                  onClick={() => handleExport("pdf", "good")}
-                >
-                  <Check className="mr-2 h-4 w-4 text-green-500" />
-                  Export Good Accounts as PDF
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  className="justify-start"
-                  onClick={() => handleExport("pdf", "bad")}
-                >
-                  <X className="mr-2 h-4 w-4 text-red-500" />
-                  Export Bad Accounts as PDF
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  className="justify-start"
-                  onClick={() => handleExport("pdf", "wrong_password")}
-                >
-                  <AlertTriangle className="mr-2 h-4 w-4 text-amber-500" />
-                  Export Wrong Password Accounts as PDF
-                </Button>
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-sm font-medium mb-2">Export Filters</h3>
+                <div className="grid grid-cols-1 gap-2">
+                  <Select value={exchangeFilter} onValueChange={(value) => setExchangeFilter(value)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select Exchange" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Exchanges</SelectItem>
+                      {exchanges.map(exchange => (
+                        <SelectItem key={exchange} value={exchange}>{exchange}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  
+                  {user?.role === "admin" && (
+                    <Select value={userFilter} onValueChange={(value) => setUserFilter(value)}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select User" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Users</SelectItem>
+                        {users.map(username => (
+                          <SelectItem key={username} value={username}>{username}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                  
+                  <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Statuses</SelectItem>
+                      <SelectItem value="good">Good Accounts</SelectItem>
+                      <SelectItem value="bad">Bad Accounts</SelectItem>
+                      <SelectItem value="wrong_password">Wrong Password Accounts</SelectItem>
+                      <SelectItem value="unchecked">Unchecked Accounts</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              <div className="pt-2">
+                <h3 className="text-sm font-medium mb-2">Export Options</h3>
+                <div className="grid grid-cols-1 gap-2">
+                  <Button 
+                    variant="outline" 
+                    className="justify-start"
+                    onClick={() => {
+                      // Apply current filters to the export
+                      let exportData = [...accounts];
+                      
+                      if (exchangeFilter !== "all") {
+                        exportData = exportData.filter(account => account.exchangeName === exchangeFilter);
+                      }
+                      
+                      if (userFilter !== "all") {
+                        exportData = exportData.filter(account => account.addedBy === userFilter);
+                      }
+                      
+                      if (statusFilter !== "all") {
+                        exportData = exportData.filter(account => account.status === statusFilter);
+                      }
+                      
+                      ReportPDF.generate(exportData);
+                      toast({
+                        title: "Export successful",
+                        description: "Report has been exported as PDF.",
+                      });
+                      setIsExportDialogOpen(false);
+                    }}
+                  >
+                    <FileDown className="mr-2 h-4 w-4" />
+                    Export with Selected Filters
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    className="justify-start"
+                    onClick={() => handleExport("pdf", "current")}
+                  >
+                    <FileDown className="mr-2 h-4 w-4" />
+                    Export Current Visible Accounts
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    className="justify-start"
+                    onClick={() => handleExport("pdf", "all")}
+                  >
+                    <FileDown className="mr-2 h-4 w-4" />
+                    Export All Accounts
+                  </Button>
+                </div>
               </div>
             </div>
             
