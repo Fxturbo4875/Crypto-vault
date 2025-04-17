@@ -48,12 +48,16 @@ export class ReportPDF {
           statusText = "Wrong Password";
         }
         
+        // Add a visual indicator with Unicode box character to the status text
+        const statusColor = this.getStatusColor(account.status || "unchecked");
+        const formattedStatus = `■ ${statusText}`;
+        
         return {
           exchangeName: account.exchangeName,
           email: account.email,
           addedBy: account.addedBy,
-          status: statusText, // Already capitalized
-          statusColor: this.getStatusColor(account.status || "unchecked"),
+          status: formattedStatus,
+          statusColor: statusColor,
         };
       });
       
@@ -77,18 +81,23 @@ export class ReportPDF {
             const rowIndex = data.row.index;
             if (rowIndex < rows.length) {
               const color = rows[rowIndex].statusColor;
+              const statusText = rows[rowIndex].status;
               
-              // Apply colored background to the status cell
+              // Apply color indicator next to status text
               if (color) {
-                // Save current state
+                // Save current fill color
                 const prevFillColor = doc.getFillColor();
                 
-                // Set colored fill
+                // Set colored fill for the status indicator
                 doc.setFillColor(color.r, color.g, color.b);
                 
-                // Draw a semi-transparent rectangle on the cell
-                // Using a fillOpacity property instead of setGlobalAlpha
-                doc.rect(data.cell.x, data.cell.y, data.cell.width, data.cell.height, 'F');
+                // Draw a small colored box at the beginning of the text
+                const squareSize = 4;
+                const squareX = data.cell.x + 5; // Offset from left edge of cell
+                const squareY = data.cell.y + data.cell.height/2 - squareSize/2; // Vertically center
+                
+                // Draw a colored square
+                doc.rect(squareX, squareY, squareSize, squareSize, 'F');
                 
                 // Restore original fill color
                 doc.setFillColor(prevFillColor);
@@ -112,13 +121,13 @@ export class ReportPDF {
   static getStatusColor(status: string) {
     switch (status) {
       case "good":
-        return { r: 0, g: 200, b: 83, a: 0.15 }; // Light green with reduced transparency
+        return { r: 0, g: 200, b: 83, a: 0.5 }; // Green with more visibility
       case "bad":
-        return { r: 255, g: 0, b: 0, a: 0.15 }; // Light red with reduced transparency
+        return { r: 255, g: 0, b: 0, a: 0.5 }; // Red with more visibility
       case "wrong_password":
-        return { r: 255, g: 191, b: 0, a: 0.15 }; // Light amber with reduced transparency
+        return { r: 255, g: 191, b: 0, a: 0.5 }; // Amber with more visibility
       default:
-        return { r: 200, g: 200, b: 200, a: 0.05 }; // Light gray with more transparency
+        return { r: 200, g: 200, b: 200, a: 0.3 }; // Gray with more visibility
     }
   }
 }
