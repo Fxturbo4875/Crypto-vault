@@ -13,10 +13,11 @@ import { ReportPDF } from "@/utils/report-pdf";
 import { Search, FileDown, Check, X, AlertTriangle } from "lucide-react";
 import Sidebar from "@/components/dashboard/fixed-sidebar";
 import { useAuth } from "@/hooks/use-auth";
+import { AuthThemeToggle } from "@/components/ui/auth-theme-toggle";
 
 export default function ReportsPage() {
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, logoutMutation } = useAuth();
   
   // State
   const [searchQuery, setSearchQuery] = useState("");
@@ -145,6 +146,18 @@ export default function ReportsPage() {
             <span className="text-lg font-medium ml-2">
               {user?.username}
             </span>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <AuthThemeToggle />
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => logoutMutation.mutate()}
+              className="bg-white text-primary border-white hover:bg-white/90 hover:text-primary text-xs font-medium"
+            >
+              Logout
+            </Button>
           </div>
         </div>
       </header>
