@@ -1,6 +1,15 @@
 import { CryptoAccountWithUser } from "@shared/schema";
 import { format } from "date-fns";
 
+// TypeScript type for row data with status color
+interface ReportRowData {
+  exchangeName: string;
+  email: string;
+  addedBy: string;
+  status: string;
+  statusColor: { r: number, g: number, b: number, a: number };
+}
+
 export class ReportPDF {
   static async generate(accounts: CryptoAccountWithUser[]) {
     try {
@@ -28,58 +37,55 @@ export class ReportPDF {
       ];
       
       // Map accounts to rows
-      const rows = accounts.map(account => ({
-        exchangeName: account.exchangeName,
-        email: account.email,
-        addedBy: account.addedBy,
-        status: account.status === "wrong_password" ? "Wrong Password" : account.status,
-        statusColor: this.getStatusColor(account.status),
-      }));
+      const rows: ReportRowData[] = accounts.map(account => {
+        const statusText = account.status === "wrong_password" ? "Wrong Password" : 
+                         (account.status || "unchecked");
+        
+        return {
+          exchangeName: account.exchangeName,
+          email: account.email,
+          addedBy: account.addedBy,
+          status: statusText.charAt(0).toUpperCase() + statusText.slice(1), // Capitalize first letter
+          statusColor: this.getStatusColor(account.status || "unchecked"),
+        };
+      });
       
       // Generate table with colored cells for status
       autoTable(doc, {
         startY: 30,
         head: [columns.map(col => col.header)],
-        body: rows.map(row => {
-          // This returns an array of cells for each row
-          return columns.map(col => {
-            const key = col.dataKey as keyof typeof row;
-            
-            // If this is the status column, we'll add coloring later with didDrawCell
-            if (key === 'status') {
-              return row[key];
-            }
-            
-            return row[key];
-          });
-        }),
+        body: rows.map(row => [
+          row.exchangeName,
+          row.email,
+          row.addedBy,
+          row.status
+        ]),
         styles: { overflow: 'linebreak', cellWidth: 'auto' },
         headStyles: { fillColor: [0, 120, 212], textColor: [255, 255, 255] },
         alternateRowStyles: { fillColor: [240, 240, 240] },
         margin: { top: 30 },
         didDrawCell: function(data) {
           // Only add coloring to the status cell (last column)
-          if (data.column.index === 3 && data.section === 'body') {
+          if (data.column.index === 3 && data.section === 'body' && data.row.index !== undefined) {
             const rowIndex = data.row.index;
-            const status = rows[rowIndex].status.toLowerCase();
-            const color = rows[rowIndex].statusColor;
-            
-            // Apply colored background to the status cell
-            if (color) {
-              const [r, g, b, a] = color;
+            if (rowIndex < rows.length) {
+              const color = rows[rowIndex].statusColor;
               
-              // Save current state
-              doc.saveGraphicsState();
-              
-              // Set transparent colored fill
-              doc.setFillColor(r, g, b);
-              doc.setGlobalAlpha(a);
-              
-              // Draw a colored rectangle on the cell
-              doc.rect(data.cell.x, data.cell.y, data.cell.width, data.cell.height, 'F');
-              
-              // Restore state
-              doc.restoreGraphicsState();
+              // Apply colored background to the status cell
+              if (color) {
+                // Save current state
+                const prevFillColor = doc.getFillColor();
+                
+                // Set colored fill
+                doc.setFillColor(color.r, color.g, color.b);
+                
+                // Draw a semi-transparent rectangle on the cell
+                // Using a fillOpacity property instead of setGlobalAlpha
+                doc.rect(data.cell.x, data.cell.y, data.cell.width, data.cell.height, 'F');
+                
+                // Restore original fill color
+                doc.setFillColor(prevFillColor);
+              }
             }
           }
         }
@@ -96,16 +102,16 @@ export class ReportPDF {
     }
   }
   
-  static getStatusColor(status: string): [number, number, number, number] {
+  static getStatusColor(status: string) {
     switch (status) {
       case "good":
-        return [0, 200, 83, 0.2]; // Light green with transparency
+        return { r: 0, g: 200, b: 83, a: 0.2 }; // Light green with transparency
       case "bad":
-        return [255, 0, 0, 0.2]; // Light red with transparency
+        return { r: 255, g: 0, b: 0, a: 0.2 }; // Light red with transparency
       case "wrong_password":
-        return [255, 191, 0, 0.2]; // Light amber with transparency
+        return { r: 255, g: 191, b: 0, a: 0.2 }; // Light amber with transparency
       default:
-        return [200, 200, 200, 0.1]; // Light gray with transparency
+        return { r: 200, g: 200, b: 200, a: 0.1 }; // Light gray with transparency
     }
   }
 }
