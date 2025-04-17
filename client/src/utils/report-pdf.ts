@@ -48,15 +48,14 @@ export class ReportPDF {
           statusText = "Wrong Password";
         }
         
-        // Add a visual indicator with Unicode box character to the status text
+        // Get status color for styling
         const statusColor = this.getStatusColor(account.status || "unchecked");
-        const formattedStatus = `■ ${statusText}`;
         
         return {
           exchangeName: account.exchangeName,
           email: account.email,
           addedBy: account.addedBy,
-          status: formattedStatus,
+          status: statusText, // Just the text without the symbol
           statusColor: statusColor,
         };
       });
@@ -69,7 +68,7 @@ export class ReportPDF {
           row.exchangeName,
           row.email,
           row.addedBy,
-          row.status
+          '' // Empty string for status cell, we'll draw it manually
         ]),
         styles: { overflow: 'linebreak', cellWidth: 'auto' },
         headStyles: { fillColor: [0, 120, 212], textColor: [255, 255, 255] },
@@ -81,19 +80,18 @@ export class ReportPDF {
             const rowIndex = data.row.index;
             if (rowIndex < rows.length) {
               const color = rows[rowIndex].statusColor;
-              const statusText = rows[rowIndex].status;
               
-              // Apply color indicator next to status text
+              // Apply color indicator before status text
               if (color) {
-                // Save current fill color
+                // Save current fill and text colors
                 const prevFillColor = doc.getFillColor();
                 
                 // Set colored fill for the status indicator
                 doc.setFillColor(color.r, color.g, color.b);
                 
-                // Draw a small colored box at the beginning of the text
-                const squareSize = 4;
-                const squareX = data.cell.x + 5; // Offset from left edge of cell
+                // Draw a colored box at the beginning of the cell
+                const squareSize = 8;
+                const squareX = data.cell.x + 3; // Offset from left edge of cell
                 const squareY = data.cell.y + data.cell.height/2 - squareSize/2; // Vertically center
                 
                 // Draw a colored square
@@ -101,6 +99,14 @@ export class ReportPDF {
                 
                 // Restore original fill color
                 doc.setFillColor(prevFillColor);
+                
+                // Draw the status text without any symbols
+                const statusText = rows[rowIndex].status;
+                const textX = data.cell.x + squareSize + 8; // Text starts after square plus some padding
+                const textY = data.cell.y + data.cell.height/2 + 3; // Vertically centered, adjusted for baseline
+                
+                // Add text after the colored square
+                doc.text(statusText, textX, textY);
               }
             }
           }
