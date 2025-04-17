@@ -66,26 +66,24 @@ export default function ExportOptions({ accounts, filteredAccounts, onClose }: E
     setIsExporting(true);
     
     try {
-      // Choose between all accounts or filtered accounts
+      // Choose between all accounts or filtered accounts as the base dataset
       let exportData = data.dataSelection === "all" ? [...accounts] : [...filteredAccounts];
       
-      // Apply additional filters if selected
-      if (data.dataSelection === "filtered" && (data.exchangeFilter !== "all" || data.authFilter !== "all" || data.userFilter !== "all")) {
-        if (data.exchangeFilter && data.exchangeFilter !== "all") {
-          exportData = exportData.filter(account => account.exchangeName === data.exchangeFilter);
-        }
-        
-        if (data.authFilter && data.authFilter !== "all") {
-          exportData = exportData.filter(account => {
-            if (data.authFilter === "true") return account.authenticatorEnabled;
-            if (data.authFilter === "false") return !account.authenticatorEnabled;
-            return true;
-          });
-        }
-        
-        if (data.userFilter && data.userFilter !== "all") {
-          exportData = exportData.filter(account => account.addedBy === data.userFilter);
-        }
+      // Apply additional filters to either dataset (all accounts or visible accounts)
+      if (data.exchangeFilter && data.exchangeFilter !== "all") {
+        exportData = exportData.filter(account => account.exchangeName === data.exchangeFilter);
+      }
+      
+      if (data.authFilter && data.authFilter !== "all") {
+        exportData = exportData.filter(account => {
+          if (data.authFilter === "true") return account.authenticatorEnabled;
+          if (data.authFilter === "false") return !account.authenticatorEnabled;
+          return true;
+        });
+      }
+      
+      if (data.userFilter && data.userFilter !== "all") {
+        exportData = exportData.filter(account => account.addedBy === data.userFilter);
       }
       
       if (exportData.length === 0) {
@@ -194,92 +192,94 @@ export default function ExportOptions({ accounts, filteredAccounts, onClose }: E
             )}
           />
           
-          {dataSelection === "filtered" && (
-            <div className="space-y-4 border rounded-md p-4">
-              <h3 className="font-medium text-sm">Additional Filters for Visible Accounts</h3>
-              <p className="text-xs text-muted-foreground">These filters will be applied to the currently visible accounts.</p>
-              
-              <FormField
-                control={form.control}
-                name="exchangeFilter"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Exchange</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="All Exchanges" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="all">All Exchanges</SelectItem>
-                        {exchanges.map(exchange => (
-                          <SelectItem key={exchange} value={exchange}>{exchange}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="authFilter"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Auth Status</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="All Auth Status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="all">All Auth Status</SelectItem>
-                        <SelectItem value="true">Authenticator Enabled</SelectItem>
-                        <SelectItem value="false">Authenticator Disabled</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="userFilter"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Added By</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="All Users" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="all">All Users</SelectItem>
-                        {users.map(user => (
-                          <SelectItem key={user} value={user}>{user}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          )}
+          <div className="space-y-4 border rounded-md p-4 mt-4">
+            <h3 className="font-medium text-sm">Filter Options</h3>
+            <p className="text-xs text-muted-foreground">
+              {dataSelection === "filtered" 
+                ? "These filters will be applied to the currently visible accounts." 
+                : "Select specific accounts to include in the export."}
+            </p>
+            
+            <FormField
+              control={form.control}
+              name="exchangeFilter"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Exchange</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="All Exchanges" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="all">All Exchanges</SelectItem>
+                      {exchanges.map(exchange => (
+                        <SelectItem key={exchange} value={exchange}>{exchange}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="authFilter"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Auth Status</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="All Auth Status" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="all">All Auth Status</SelectItem>
+                      <SelectItem value="true">Authenticator Enabled</SelectItem>
+                      <SelectItem value="false">Authenticator Disabled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="userFilter"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Added By</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="All Users" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="all">All Users</SelectItem>
+                      {users.map(user => (
+                        <SelectItem key={user} value={user}>{user}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
           
           <DialogFooter className="mt-6">
             <Button type="button" variant="outline" onClick={onClose}>
