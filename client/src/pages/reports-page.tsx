@@ -25,25 +25,35 @@ export default function ReportsPage() {
   const [userFilter, setUserFilter] = useState("all");
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
   
+  // Add a state to force re-render when status changes
+  const [statusUpdateKey, setStatusUpdateKey] = useState(0);
+  
   // Fetch accounts
-  const { data: accounts = [], isLoading } = useQuery<CryptoAccountWithUser[]>({
-    queryKey: ["/api/accounts"],
+  const { data: accounts = [], isLoading, refetch } = useQuery<CryptoAccountWithUser[]>({
+    queryKey: ["/api/accounts", statusUpdateKey], // Include statusUpdateKey to force refresh on status changes
     refetchOnWindowFocus: true,
   });
   
   // Update account status mutation
   const updateStatusMutation = useMutation({
     mutationFn: async ({id, status}: {id: number, status: string}) => {
-      return apiRequest("PUT", `/api/accounts/${id}`, { status });
+      const response = await apiRequest("PUT", `/api/accounts/${id}`, { status });
+      return response.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/accounts"] });
+    onSuccess: async (data) => {
+      // Force invalidate the query cache
+      await queryClient.invalidateQueries({ queryKey: ["/api/accounts"] });
+      
+      // Force a re-render of the component
+      setStatusUpdateKey(prev => prev + 1);
+      
       toast({
         title: "Status updated",
         description: "Account status has been updated successfully",
       });
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Status update error:", error);
       toast({
         title: "Error",
         description: "Failed to update account status",
@@ -77,7 +87,12 @@ export default function ReportsPage() {
     .filter((value, index, self) => self.indexOf(value) === index);
   
   const handleStatusChange = (accountId: number, status: string) => {
-    updateStatusMutation.mutate({ id: accountId, status });
+    updateStatusMutation.mutate({ id: accountId, status }, {
+      onSuccess: () => {
+        // Manually call refetch to immediately update the table
+        refetch();
+      }
+    });
   };
   
   const handleExport = (exportFormat: string, exportFilter: string) => {
