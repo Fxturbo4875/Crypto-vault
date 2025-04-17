@@ -198,45 +198,45 @@ export default function ReportsPage() {
           </div>
           
           <div className="bg-card rounded-md shadow overflow-hidden">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[100px] md:w-auto">Exchange</TableHead>
-                    <TableHead className="w-[120px] md:w-auto">Email</TableHead>
-                    <TableHead className="w-[80px] md:w-auto hidden md:table-cell">Added By</TableHead>
-                    <TableHead className="w-[100px] md:w-auto">Status</TableHead>
-                    <TableHead className="w-[120px] md:w-auto text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+            <div className="max-h-[70vh] overflow-y-auto overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead className="sticky top-0 z-10 bg-card">
+                  <tr className="border-b transition-colors">
+                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground w-[100px] md:w-auto">Exchange</th>
+                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground w-[120px] md:w-auto">Email</th>
+                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground w-[80px] md:w-auto hidden md:table-cell">Added By</th>
+                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground w-[100px] md:w-auto">Status</th>
+                    <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-[120px] md:w-auto">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
                   {isLoading ? (
-                    <TableRow>
-                      <TableCell colSpan={5} className="text-center py-8">
+                    <tr className="border-b transition-colors">
+                      <td className="p-4 align-middle text-center py-8" colSpan={5}>
                         Loading accounts...
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ) : filteredAccounts.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={5} className="text-center py-8">
+                    <tr className="border-b transition-colors">
+                      <td className="p-4 align-middle text-center py-8" colSpan={5}>
                         No accounts found.
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ) : (
                     filteredAccounts.map(account => (
-                      <TableRow key={account.id}>
-                        <TableCell className="font-medium whitespace-nowrap">{account.exchangeName}</TableCell>
-                        <TableCell className="whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px]">{account.email}</TableCell>
-                        <TableCell className="hidden md:table-cell">{account.addedBy}</TableCell>
-                        <TableCell>
+                      <tr key={account.id} className="border-b transition-colors hover:bg-muted/50">
+                        <td className="p-4 align-middle font-medium whitespace-nowrap">{account.exchangeName}</td>
+                        <td className="p-4 align-middle whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px]">{account.email}</td>
+                        <td className="p-4 align-middle hidden md:table-cell">{account.addedBy}</td>
+                        <td className="p-4 align-middle">
                           <div className="flex items-center whitespace-nowrap">
                             {getStatusIcon(account.status)}
                             <span className="ml-1 capitalize truncate text-xs md:text-sm">
                               {account.status === "wrong_password" ? "Wrong Pass" : account.status}
                             </span>
                           </div>
-                        </TableCell>
-                        <TableCell className="p-2 md:p-4">
+                        </td>
+                        <td className="p-2 md:p-4 align-middle">
                           <div className="flex flex-col md:flex-row justify-end items-end md:items-center gap-1 md:gap-2">
                             <div className="flex items-center gap-1">
                               <Checkbox 
@@ -274,12 +274,12 @@ export default function ReportsPage() {
                               <label htmlFor={`wrong-${account.id}`} className="text-xs md:text-sm text-amber-600">WPass</label>
                             </div>
                           </div>
-                        </TableCell>
-                      </TableRow>
+                        </td>
+                      </tr>
                     ))
                   )}
-                </TableBody>
-              </Table>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
