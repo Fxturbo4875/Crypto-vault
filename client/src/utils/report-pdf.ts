@@ -74,6 +74,10 @@ export class ReportPDF {
         headStyles: { fillColor: [0, 120, 212], textColor: [255, 255, 255] },
         alternateRowStyles: { fillColor: [240, 240, 240] },
         margin: { top: 30 },
+        columnStyles: {
+          // Ensure the status column has enough width
+          3: { cellWidth: 50 } // Increase width for the status column
+        },
         didDrawCell: function(data) {
           // Only add coloring to the status cell (last column)
           if (data.column.index === 3 && data.section === 'body' && data.row.index !== undefined) {
@@ -105,8 +109,10 @@ export class ReportPDF {
                 const textX = data.cell.x + squareSize + 8; // Text starts after square plus some padding
                 const textY = data.cell.y + data.cell.height/2 + 3; // Vertically centered, adjusted for baseline
                 
-                // Add text after the colored square
+                // Add text after the colored square - use smaller font for longer status texts
+                doc.setFontSize(9); // Smaller font for status text
                 doc.text(statusText, textX, textY);
+                doc.setFontSize(10); // Reset to default font size
               }
             }
           }
