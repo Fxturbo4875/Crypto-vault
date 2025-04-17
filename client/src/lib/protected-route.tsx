@@ -8,7 +8,7 @@ export function ProtectedRoute({
   component: Component,
 }: {
   path: string;
-  component: React.ComponentType;
+  component: React.ComponentType<any>;
 }) {
   const { user, isLoading } = useAuth();
 
@@ -25,7 +25,9 @@ export function ProtectedRoute({
       return <Redirect to="/auth" />;
     }
 
-    return <Component />;
+    // Pass isAdmin flag to component
+    const isAdmin = user.role === 'admin';
+    return <Component isAdmin={isAdmin} />;
   };
 
   return <Route path={path} component={ProtectedComponent} />;

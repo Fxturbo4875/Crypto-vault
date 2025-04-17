@@ -17,7 +17,7 @@ function Router() {
     <Switch>
       <ProtectedRoute path="/" component={Dashboard} />
       <ProtectedRoute path="/users" component={UsersPage} />
-      <ProtectedRoute path="/reports" component={ReportsPage} />
+      <ProtectedRoute path="/reports" component={(props: { isAdmin: boolean }) => props.isAdmin ? <ReportsPage /> : <UserReportPage />} />
       <ProtectedRoute path="/settings" component={Dashboard} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
