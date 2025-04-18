@@ -1,5 +1,5 @@
-import { db } from './server/db.js';
-import { cryptoAccounts, users } from './shared/schema.js';
+import { db } from './server/db.ts';
+import { cryptoAccounts, users } from './shared/schema.ts';
 import { eq } from 'drizzle-orm';
 import { format } from 'date-fns';
 
