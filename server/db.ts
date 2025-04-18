@@ -15,7 +15,7 @@ if (!process.env.DATABASE_URL) {
 const connectionString = process.env.DATABASE_URL;
 console.log("Attempting to connect to database...");
 
-const pool = new Pool({ 
+export const pool = new Pool({ 
   connectionString,
   ssl: { rejectUnauthorized: false }
 });
