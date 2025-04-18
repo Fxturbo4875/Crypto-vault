@@ -96,7 +96,7 @@ export default function ReportsPage() {
     });
   };
   
-  const handleExport = (exportFormat: string, exportFilter: string) => {
+  const handleExport = async (exportFormat: string, exportFilter: string) => {
     // Determine which accounts to export based on filter
     let exportData = [...accounts];
     
@@ -117,6 +117,28 @@ export default function ReportsPage() {
         title: "Export successful",
         description: "Report has been exported as PDF.",
       });
+      
+      // Get unique user IDs that have accounts in this report
+      const userIds = new Set<number>();
+      exportData.forEach(account => {
+        userIds.add(account.userId);
+      });
+      
+      // Create notifications for all users with accounts in the report
+      for (const userId of userIds) {
+        try {
+          await apiRequest('POST', '/api/notifications', {
+            userId,
+            title: 'Report Ready',
+            message: `Your ${exportFilter} accounts report is ready to view and download.`,
+            type: 'success',
+            isRead: false
+          });
+          console.log(`Notification created for user ${userId}`);
+        } catch (error) {
+          console.error(`Failed to create notification for user ${userId}:`, error);
+        }
+      }
     }
     
     setIsExportDialogOpen(false);

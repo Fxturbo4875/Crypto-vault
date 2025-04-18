@@ -2,8 +2,9 @@ import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
-import { insertCryptoAccountSchema } from "@shared/schema";
+import { insertCryptoAccountSchema, insertNotificationSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
+import { WebSocketServer, WebSocket } from "ws";
 
 // Middleware to check if user is authenticated
 const isAuthenticated = (req: Request, res: Response, next: Function) => {
@@ -209,6 +210,171 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Notification routes
+  
+  // Get user's notifications
+  app.get("/api/notifications", isAuthenticated, async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const notifications = await storage.getNotificationsByUserId(req.user.id);
+      res.json(notifications);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      res.status(500).json({ message: "Failed to fetch notifications" });
+    }
+  });
+  
+  // Create notification 
+  // Note: This is typically called from the server to create notifications
+  // for users, but we expose it as an API for testing
+  app.post("/api/notifications", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const validation = insertNotificationSchema.safeParse(req.body);
+      
+      if (!validation.success) {
+        const errorMessage = fromZodError(validation.error).message;
+        return res.status(400).json({ message: errorMessage });
+      }
+      
+      const notification = await storage.createNotification(validation.data);
+      res.status(201).json(notification);
+    } catch (error) {
+      console.error("Error creating notification:", error);
+      res.status(500).json({ message: "Failed to create notification" });
+    }
+  });
+  
+  // Mark notification as read
+  app.put("/api/notifications/:id/read", isAuthenticated, async (req, res) => {
+    try {
+      const notificationId = parseInt(req.params.id);
+      const result = await storage.markNotificationAsRead(notificationId);
+      
+      if (result) {
+        res.status(200).json({ success: true });
+      } else {
+        res.status(404).json({ message: "Notification not found" });
+      }
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      res.status(500).json({ message: "Failed to mark notification as read" });
+    }
+  });
+  
+  // Delete notification
+  app.delete("/api/notifications/:id", isAuthenticated, async (req, res) => {
+    try {
+      const notificationId = parseInt(req.params.id);
+      const result = await storage.deleteNotification(notificationId);
+      
+      if (result) {
+        res.status(204).send();
+      } else {
+        res.status(404).json({ message: "Notification not found" });
+      }
+    } catch (error) {
+      console.error("Error deleting notification:", error);
+      res.status(500).json({ message: "Failed to delete notification" });
+    }
+  });
+
   const httpServer = createServer(app);
+  
+  // Setup WebSocket server for real-time notifications
+  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+  
+  // Store active connections by userId
+  const clients = new Map<number, WebSocket[]>();
+  
+  wss.on('connection', (ws) => {
+    console.log('WebSocket client connected');
+    
+    // Handle auth message from client to identify the user
+    ws.on('message', (message) => {
+      try {
+        const data = JSON.parse(message.toString());
+        
+        if (data.type === 'auth' && data.userId) {
+          const userId = parseInt(data.userId);
+          
+          // Add client to the connections map
+          if (!clients.has(userId)) {
+            clients.set(userId, []);
+          }
+          clients.get(userId)?.push(ws);
+          
+          console.log(`User ${userId} authenticated on WebSocket`);
+          
+          // Send initial unread notifications
+          (async () => {
+            const notifications = await storage.getNotificationsByUserId(userId);
+            const unreadNotifications = notifications.filter(n => !n.isRead);
+            
+            if (unreadNotifications.length > 0) {
+              ws.send(JSON.stringify({
+                type: 'notifications',
+                notifications: unreadNotifications
+              }));
+            }
+          })();
+        }
+      } catch (error) {
+        console.error('WebSocket message error:', error);
+      }
+    });
+    
+    // Handle client disconnect
+    ws.on('close', () => {
+      console.log('WebSocket client disconnected');
+      
+      // Remove the connection from all users (we don't track which user it belonged to)
+      clients.forEach((connections, userId) => {
+        const index = connections.indexOf(ws);
+        if (index !== -1) {
+          connections.splice(index, 1);
+          if (connections.length === 0) {
+            clients.delete(userId);
+          }
+        }
+      });
+    });
+  });
+  
+  // Modify createReportNotification to also send the notification via WebSocket
+  const createReportNotification = async (userId: number, reportType: string) => {
+    try {
+      const notification = await storage.createNotification({
+        userId,
+        title: "Report Ready",
+        message: `Your ${reportType} report is ready to view and download.`,
+        type: "success",
+        isRead: false
+      });
+      
+      // Send notification to connected clients
+      const userConnections = clients.get(userId);
+      if (userConnections && userConnections.length > 0) {
+        const message = JSON.stringify({
+          type: 'notification',
+          notification
+        });
+        
+        userConnections.forEach(client => {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(message);
+          }
+        });
+      }
+      
+      return notification;
+    } catch (error) {
+      console.error("Error creating report notification:", error);
+      return null;
+    }
+  };
+  
   return httpServer;
 }

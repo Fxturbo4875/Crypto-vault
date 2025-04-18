@@ -11,6 +11,7 @@ import Sidebar from "@/components/dashboard/fixed-sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { AuthThemeToggle } from "@/components/ui/auth-theme-toggle";
 import { ReportPDF } from "@/utils/report-pdf";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function UserReportPage() {
   const { toast } = useToast();
@@ -75,7 +76,7 @@ export default function UserReportPage() {
     }
   };
   
-  const handleExport = (statusFilter: string) => {
+  const handleExport = async (statusFilter: string) => {
     try {
       // Filter accounts based on status
       let exportData = [...accounts];
@@ -100,6 +101,22 @@ export default function UserReportPage() {
         title: "Export successful",
         description: "Report has been exported as PDF.",
       });
+      
+      // Create a notification for the user
+      if (user?.id) {
+        try {
+          await apiRequest('POST', '/api/notifications', {
+            userId: user.id,
+            title: 'Report Ready',
+            message: `Your ${statusFilter !== 'all' ? statusFilter : ''} accounts report is ready to view and download.`,
+            type: 'success',
+            isRead: false
+          });
+          console.log('Notification created for report generation');
+        } catch (error) {
+          console.error('Failed to create notification:', error);
+        }
+      }
       
       setIsExportDialogOpen(false);
     } catch (error) {

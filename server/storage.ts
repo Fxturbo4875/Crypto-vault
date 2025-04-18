@@ -11,7 +11,7 @@ import {
   type InsertNotification
 } from "@shared/schema";
 import session from "express-session";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { db, pool } from "./db";
 import connectPg from "connect-pg-simple";
 
@@ -166,7 +166,7 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(notifications)
       .where(eq(notifications.userId, userId))
-      .orderBy(notifications.createdAt, 'desc');
+      .orderBy(desc(notifications.createdAt));
   }
 
   async createNotification(notification: InsertNotification): Promise<Notification> {
