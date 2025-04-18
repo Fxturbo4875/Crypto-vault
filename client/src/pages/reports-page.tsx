@@ -77,6 +77,20 @@ export default function ReportsPage() {
     const matchesUser = userFilter === "all" || account.addedBy === userFilter;
     
     return matchesSearch && matchesExchange && matchesStatus && matchesUser;
+  })
+  // Sort accounts so unchecked accounts appear first
+  .sort((a, b) => {
+    // If both are unchecked or both are not unchecked, maintain original order
+    if ((a.status === "unchecked" && b.status === "unchecked") || 
+        (a.status !== "unchecked" && b.status !== "unchecked")) {
+      return 0;
+    }
+    // If a is unchecked, it should come before b
+    if (a.status === "unchecked") {
+      return -1;
+    }
+    // If b is unchecked, it should come before a
+    return 1;
   });
   
   // Get unique exchanges, users and statuses for filters
