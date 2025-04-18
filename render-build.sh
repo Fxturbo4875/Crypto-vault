@@ -5,6 +5,9 @@ set -x
 # Install dependencies
 npm install
 
+# Install vite globally
+npm install -g vite
+
 # Build the client
 npm run build
 
