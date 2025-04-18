@@ -12,10 +12,13 @@ if [ $? -eq 0 ]; then
   echo "Build completed successfully!"
 else
   echo "Build failed!"
+  echo "Running npm audit to check for issues..."
+  npm audit
   exit 1
 fi
 
 # Run database migrations
 npm run db:push
 
-echo "Build process completed!"
+# Final success message
+echo "Build process completed successfully!"
