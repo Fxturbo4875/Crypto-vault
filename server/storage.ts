@@ -1,4 +1,15 @@
-import { users, type User, type InsertUser, cryptoAccounts, type CryptoAccount, type InsertCryptoAccount, type CryptoAccountWithUser } from "@shared/schema";
+import { 
+  users, 
+  type User, 
+  type InsertUser, 
+  cryptoAccounts, 
+  type CryptoAccount, 
+  type InsertCryptoAccount, 
+  type CryptoAccountWithUser,
+  notifications,
+  type Notification,
+  type InsertNotification
+} from "@shared/schema";
 import session from "express-session";
 import { eq } from "drizzle-orm";
 import { db, pool } from "./db";
@@ -21,6 +32,12 @@ export interface IStorage {
   createAccount(account: InsertCryptoAccount): Promise<CryptoAccount>;
   updateAccount(id: number, account: Partial<InsertCryptoAccount>): Promise<CryptoAccount | undefined>;
   deleteAccount(id: number): Promise<boolean>;
+  
+  // Notification related methods
+  getNotificationsByUserId(userId: number): Promise<Notification[]>;
+  createNotification(notification: InsertNotification): Promise<Notification>;
+  markNotificationAsRead(id: number): Promise<boolean>;
+  deleteNotification(id: number): Promise<boolean>;
   
   // Session store
   sessionStore: any; // Express session store
@@ -139,6 +156,46 @@ export class DatabaseStorage implements IStorage {
       return true;
     } catch (error) {
       console.error("Error deleting account:", error);
+      return false;
+    }
+  }
+
+  // Notification methods
+  async getNotificationsByUserId(userId: number): Promise<Notification[]> {
+    return await db
+      .select()
+      .from(notifications)
+      .where(eq(notifications.userId, userId))
+      .orderBy(notifications.createdAt, 'desc');
+  }
+
+  async createNotification(notification: InsertNotification): Promise<Notification> {
+    const [newNotification] = await db
+      .insert(notifications)
+      .values(notification)
+      .returning();
+    return newNotification;
+  }
+
+  async markNotificationAsRead(id: number): Promise<boolean> {
+    try {
+      await db
+        .update(notifications)
+        .set({ isRead: true })
+        .where(eq(notifications.id, id));
+      return true;
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      return false;
+    }
+  }
+
+  async deleteNotification(id: number): Promise<boolean> {
+    try {
+      await db.delete(notifications).where(eq(notifications.id, id));
+      return true;
+    } catch (error) {
+      console.error("Error deleting notification:", error);
       return false;
     }
   }
