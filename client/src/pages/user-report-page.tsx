@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { AuthThemeToggle } from "@/components/ui/auth-theme-toggle";
 import { ReportPDF } from "@/utils/report-pdf";
 import { apiRequest } from "@/lib/queryClient";
+import { NotificationsList } from "@/components/notifications/notifications-list";
 
 export default function UserReportPage() {
   const { toast } = useToast();
@@ -141,6 +142,7 @@ export default function UserReportPage() {
           </div>
           
           <div className="flex items-center space-x-2">
+            <NotificationsList />
             <AuthThemeToggle />
             <Button 
               variant="outline" 

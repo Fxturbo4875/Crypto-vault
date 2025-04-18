@@ -104,6 +104,7 @@ export default function Dashboard() {
           </div>
           
           <div className="flex items-center space-x-2">
+            <NotificationsList />
             <AuthThemeToggle />
             <Button 
               variant="outline" 

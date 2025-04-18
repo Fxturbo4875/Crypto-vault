@@ -14,6 +14,7 @@ import { Search, FileDown, Check, X, AlertTriangle } from "lucide-react";
 import Sidebar from "@/components/dashboard/fixed-sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { AuthThemeToggle } from "@/components/ui/auth-theme-toggle";
+import { NotificationsList } from "@/components/notifications/notifications-list";
 
 export default function ReportsPage() {
   const { toast } = useToast();
@@ -170,6 +171,7 @@ export default function ReportsPage() {
           </div>
           
           <div className="flex items-center space-x-2">
+            <NotificationsList />
             <AuthThemeToggle />
             <Button 
               variant="outline" 
