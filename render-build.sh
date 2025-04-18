@@ -15,5 +15,5 @@ else
   exit 1
 fi
 
-# Run database migrations
+# Run database migrations if needed
 npm run db:push
