@@ -13,20 +13,31 @@ if (!process.env.DATABASE_URL) {
 
 const connectionString = process.env.DATABASE_URL;
 console.log("Attempting to connect to database...");
+// Add retry logic for more reliable connection
+const MAX_RETRIES = 5;
+const RETRY_DELAY = 5000; // 5 seconds
+
+let retries = 0;
+while (retries < MAX_RETRIES) {
+  try {
+    await pool.connect(); // Modified to use await and pool.connect() directly.  Assumes pool has a connect method.  If not, adjustments will be needed based on the Pool library.
+    console.log('Successfully connected to database');
+    break;
+  } catch (err) {
+    retries++;
+    console.log(`Failed to connect, attempt ${retries} of ${MAX_RETRIES}`);
+    if (retries === MAX_RETRIES) {
+      console.error('Could not connect to database after multiple attempts:', err);
+      throw err;
+    }
+    await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+  }
+}
 
 export const pool = new Pool({ 
   connectionString,
   ssl: { rejectUnauthorized: false }
 });
 
-// Test the connection
-pool.connect((err, client, release) => {
-  if (err) {
-    console.error('Error connecting to the database:', err.message);
-    return;
-  }
-  console.log('Successfully connected to database');
-  release();
-});
 
 export const db = drizzle({ client: pool, schema });
