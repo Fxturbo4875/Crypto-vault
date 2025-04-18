@@ -6,7 +6,7 @@ hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
 channel = "stable-24_05"
 
 [deployment]
-deploymentTarget = "autoscale"
+deploymentTarget = "static"
 build = ["sh", "-c", "./render-build.sh"]
 run = ["sh", "-c", "NODE_ENV=production node dist/index.js"]
 
