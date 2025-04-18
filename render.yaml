@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: crypto-vault
+    env: node
+    buildCommand: npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: crypto-vault-db
+          property: connectionString
+
+databases:
+  - name: crypto-vault-db
+    databaseName: crypto_vault
+    ipAllowList: []  # Only allow connections from Render services
+
+jobs:
+  - name: db-migrate
+    buildCommand: npm install
+    startCommand: npm run db:push
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: crypto-vault-db
+          property: connectionString

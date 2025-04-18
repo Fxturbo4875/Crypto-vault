@@ -1,17 +1,8 @@
 # Dependency directories
 node_modules/
-.npm
-
-# Replit specific
-.replit
-replit.nix
-.config/
-.upm/
-
-# Build/dist directories
-dist/
-build/
-.cache/
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
 
 # Environment variables
 .env
@@ -20,19 +11,21 @@ build/
 .env.test.local
 .env.production.local
 
-# Logs
-logs
-*.log
+# Build output
+dist/
+build/
+
+# Debug logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# IDE and editor folders
-.idea/
+# Editors
 .vscode/
+.idea/
 *.swp
 *.swo
 
-# OS files
+# OS
 .DS_Store
 Thumbs.db
