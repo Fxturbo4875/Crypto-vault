@@ -2,7 +2,7 @@
 #!/bin/bash
 set -x
 
-# Install dependencies including dev dependencies
+# Install dependencies
 npm install
 
 # Build the client
@@ -15,5 +15,7 @@ else
   exit 1
 fi
 
-# Run database migrations if needed
+# Run database migrations
 npm run db:push
+
+echo "Build process completed!"
