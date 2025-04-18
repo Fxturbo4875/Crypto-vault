@@ -16,7 +16,7 @@ console.log("Attempting to connect to database...");
 
 export const pool = new Pool({ 
   connectionString,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  ssl: { rejectUnauthorized: false }
 });
 
 // Test the connection
