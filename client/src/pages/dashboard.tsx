@@ -6,6 +6,7 @@ import AccountTable from "@/components/dashboard/account-table";
 import AddAccountForm from "@/components/dashboard/add-account-form";
 import ExportOptions from "@/components/dashboard/export-options";
 import ViewAccount from "@/components/dashboard/view-account";
+import { NotificationsList } from "@/components/notifications/notifications-list";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
