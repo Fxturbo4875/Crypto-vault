@@ -119,10 +119,9 @@ export default function ReportsPage() {
       });
       
       // Get unique user IDs that have accounts in this report
-      const userIds = new Set<number>();
-      exportData.forEach(account => {
-        userIds.add(account.userId);
-      });
+      const userIds = Array.from(new Set<number>(
+        exportData.map(account => account.userId)
+      ));
       
       // Create notifications for all users with accounts in the report
       for (const userId of userIds) {
