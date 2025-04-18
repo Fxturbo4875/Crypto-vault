@@ -37,6 +37,11 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const wsUrl = `${protocol}//${window.location.host}/ws`;
 
+    // Close any existing connection
+    if (socket) {
+      socket.close();
+    }
+
     const ws = new WebSocket(wsUrl);
     setSocket(ws);
 
@@ -51,6 +56,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
 
     ws.onmessage = (event) => {
       try {
+        console.log("WebSocket message received:", event.data);
         const data = JSON.parse(event.data);
         
         if (data.type === "notification") {
@@ -66,6 +72,9 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
             if (!oldData) return [data.notification];
             return [data.notification, ...oldData];
           });
+          
+          // Force a refetch to ensure we have the server-generated ID and other fields
+          refetch();
         } else if (data.type === "notifications") {
           // Initial unread notifications batch
           if (data.notifications.length > 0) {
@@ -83,8 +92,18 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    ws.onclose = () => {
-      console.log("WebSocket connection closed");
+    ws.onclose = (event) => {
+      console.log("WebSocket connection closed", event.code, event.reason);
+      
+      // Try to reconnect if the connection was closed unexpectedly
+      // and user is still logged in
+      if (event.code !== 1000 && user) {
+        setTimeout(() => {
+          console.log("Attempting to reconnect WebSocket...");
+          // The effect will run again and reconnect
+          setSocket(null);
+        }, 3000);
+      }
     };
 
     ws.onerror = (error) => {
@@ -94,7 +113,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     return () => {
       ws.close();
     };
-  }, [user, toast, queryClient, refetch]);
+  }, [user, toast, queryClient, refetch, socket === null]);
 
   // Mark notification as read
   const markAsReadMutation = useMutation({

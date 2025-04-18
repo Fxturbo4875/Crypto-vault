@@ -127,8 +127,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const updatedAccount = await storage.updateAccount(accountId, req.body);
+      
+      // Create a notification for the account owner when status is updated
+      // but only if the update contains a status change and the updater is not the owner
+      if (req.body.status && account.userId !== req.user?.id) {
+        const statusMap: Record<string, string> = {
+          good: "Good",
+          bad: "Bad",
+          wrong_password: "Wrong Password",
+          unchecked: "Unchecked"
+        };
+        const statusText = statusMap[req.body.status] || req.body.status;
+        
+        // Create a notification for the account owner
+        await storage.createNotification({
+          userId: account.userId,
+          title: "Account Status Updated",
+          message: `Your ${account.exchangeName} account status was updated to "${statusText}".`,
+          type: req.body.status === "good" ? "success" : 
+                req.body.status === "bad" ? "error" : 
+                req.body.status === "wrong_password" ? "warning" : "info",
+          isRead: false
+        });
+        
+        // Send a real-time notification to connected clients
+        const userConnections = clients.get(account.userId);
+        if (userConnections && userConnections.length > 0) {
+          const notification = {
+            id: Date.now(), // Temporary ID that will be replaced when client refreshes
+            userId: account.userId,
+            title: "Account Status Updated",
+            message: `Your ${account.exchangeName} account status was updated to "${statusText}".`,
+            type: req.body.status === "good" ? "success" : 
+                  req.body.status === "bad" ? "error" : 
+                  req.body.status === "wrong_password" ? "warning" : "info",
+            isRead: false,
+            createdAt: new Date()
+          };
+          
+          const message = JSON.stringify({
+            type: 'notification',
+            notification
+          });
+          
+          userConnections.forEach(client => {
+            if (client.readyState === WebSocket.OPEN) {
+              client.send(message);
+            }
+          });
+        }
+      }
+      
       res.json(updatedAccount);
     } catch (error) {
+      console.error("Error updating account:", error);
       res.status(500).json({ message: "Failed to update account" });
     }
   });
