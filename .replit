@@ -8,7 +8,7 @@ channel = "stable-24_05"
 [deployment]
 deploymentTarget = "static"
 build = ["sh", "-c", "./render-build.sh"]
-run = ["sh", "-c", "NODE_ENV=production node dist/index.js"]
+run = ["sh", "-c", "node dist/index.js"]
 
 [[ports]]
 localPort = 5000
